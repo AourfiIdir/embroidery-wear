@@ -6,6 +6,61 @@
     <title>Document</title>
 </head>
 <body>
-    <h1></h1>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Navbar</title>
+    <link rel="stylesheet" href="/FRONTEND/css/main/main.css">
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">Logo</div>
+            <ul class="navbar-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="navbar-search">
+                <input type="text" id="search-input" placeholder="Search...">
+                <button id="search-button">Search</button>
+            </div>
+            <button class="navbar-cart" onclick="window.location.href='#cart'">
+                🛒 Cart
+            </button>
+            <button class="navbar-register">Register</button>
+        </div>
+    </nav>
+
+    <!-- slider -->
+    <div class="slider-container">
+        <div class="slider">
+            <div class="slide active">
+                <img src="/FRONTEND/assets/images/sliderPng1.jpg" alt="Image 1">
+            </div>
+            <div class="slide">
+                <img src="/FRONTEND/assets/images/sliderPng2.jpg" alt="Image 2">
+            </div>
+            <div class="slide">
+                <img src="/FRONTEND/assets/images/sliderPng3.jpg" alt="Image 3">
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- about -->
+     <div class="about">
+        <div class="text_about">
+            <h1>ABOUT</h1>
+            <h3>we are a specialized team on making personalized high quality brodery clothes including <span>T-shirts sweatshirts pants socks</span></h3>
+        </div>
+     </div>
+    <script src="/FRONTEND/js/main.js/main.js"></script>
+</body>
+</html>
 </body>
 </html>

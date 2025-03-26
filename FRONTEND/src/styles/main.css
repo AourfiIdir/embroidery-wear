@@ -21,100 +21,164 @@ body {
     background-size: 100%;
 }
 
-.logo_img{
-  width: 30%;
-}
-.navbar-brand{
-  width: 20%;
-}
-
+/* nav bar */
+/* Base Styles */
+/* Base Styles */
 .navbar {
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
 }
 
 .navbar-container {
-    display: flex;  
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 20px; /* Add spacing between items */
 }
 
-.navbar-brand {
-    font-size: 30px;
-    font-weight: bold;
+.navbar-brand img {
+  height: 40px;
 }
 
 .navbar-links {
-    list-style: none;
-    display: flex;
-    gap: 20px;
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px; /* Add spacing between links */
+}
+
+.navbar-links li {
+  margin-left: 0; /* Remove default margin */
 }
 
 .navbar-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-}
-
-.navbar-links a:hover {
-    color: #ddd;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 8px 12px; /* Add padding to links */
+  display: block;
 }
 
 .navbar-search {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Add spacing between input and button */
 }
 
-#search-input {
-    padding: 5px;
-    border: none;
-    border-radius: 3px;
-    margin-right: 5px;
+.navbar-search input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-#search-button {
-    padding: 5px 10px;
-    background-color: #555;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-#search-button:hover {
-    background-color: #777;
+.navbar-search button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .navbar-cart {
-    padding: 5px 15px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    margin-right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px; /* Add padding to cart button */
 }
 
-.navbar-cart:hover {
-    background-color: #218838;
+.form {
+  display: flex;
+  gap: 10px; /* Add spacing between buttons */
 }
 
-.navbar-register {
-    padding: 5px 15px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px; /* Add padding to toggle button */
 }
 
-.navbar-register:hover {
-    background-color: #0056b3;
+.hamburger {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  position: relative;
 }
 
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  position: absolute;
+  left: 0;
+}
+
+.hamburger::before {
+  top: -8px;
+}
+
+.hamburger::after {
+  top: 8px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar-container {
+      flex-wrap: wrap; /* Allow items to wrap */
+  }
+
+  .navbar-links {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      background-color: #444; /* Darker background for dropdown */
+      position: absolute;
+      top: 60px; /* Adjust based on navbar height */
+      left: 0;
+      z-index: 1000; /* Ensure it appears above other elements */
+      padding: 10px 0; /* Add padding to dropdown */
+  }
+
+  .navbar-links.active {
+      display: flex;
+  }
+
+  .navbar-links li {
+      margin: 0; /* Remove margin for dropdown items */
+      text-align: center;
+  }
+
+  .navbar-links a {
+      padding: 10px 20px; /* Add padding to dropdown links */
+  }
+
+  .navbar-search,
+  .navbar-cart {
+      display: none; /* Hide search and cart on small screens */
+  }
+
+  .form {
+      display: flex; /* Ensure login and sign-in buttons are visible */
+      gap: 10px;
+  }
+
+  .navbar-toggle {
+      display: block; /* Show toggle button on small screens */
+  }
+}
 /* slider  */
 /* Basic Reset */
 * {
@@ -132,7 +196,7 @@ body, html {
 
 /* Full-Screen Slider Container */
 .slider-container {
-    width: 100vw; /* Full viewport width */
+    width: 100%; /* Full viewport width */
     height: 100vh; /* Full viewport height */
     position: relative;
     overflow: hidden;
@@ -189,10 +253,45 @@ body, html {
 
 /* featuers */
 
+.icon-container {
+  display: flex;
+  justify-content: space-between; 
+  margin-top: 200px;
+  gap: 10px;
+  margin-inline: 20px;
+}
 
+.icon-box {
+  text-align: center;
+  font-size: 80px;
+  
+  border: 2px solid #ddd;
+  border-radius: 50px;
+  width: 100%;
+  size: 100%;
 
+}
+.icon-container.icon-box:nth-child(2) {
+  flex-direction: row; 
+  justify-content: flex; 
+  align-items: center;
+}
+.icon-container.icon-box:nth-child(2) i {
+  transform: rotate(90deg); 
+ 
+}
 
+.icon-container.icon-box:nth-child(2) p {
+  margin-top: 10px;
+}
+.icon-box p {
+  font-size: 14px;
+  margin-top: 10px; 
+}
 
+.icon-box:hover {
+  background-color: #f0f0f0;
+}
 
 /* products */
 

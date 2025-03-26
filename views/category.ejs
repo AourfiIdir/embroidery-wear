@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products in <%= category %></title>
+    <style>
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .product-image {
+            max-width: 100%;
+            height: 200px;
+            object-fit: contain;
+        }
+        .price {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9em;
+        }
+        .promo-price {
+            color: #e53935;
+            font-size: 1.2em;
+        }
+        .promo-badge {
+            background: #e53935;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="filter">
+      <!-- Form to filter products by price -->
+      <form action="/category/<%=category%>/filter" method="GET">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" name="minprice" id="minPrice" value="0" />
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" name="maxprice" id="maxPrice" value="0" />
+        <button type="submit">Filter</button>
+      </form>
+    </div>
+
+    <h1><%= category %></h1>
+    <div class="product-grid">
+        <% products.forEach(product => { %>
+            <div class="product-card">
+                <img src="<%=product.img_path %>" 
+                    alt="<%= product.description %>"
+                    class="product-image"
+                    onerror="this.src=''">
+                <h3><%= product.description %></h3>
+                
+                <div class="price">
+                    <% if (product.has_promo) { %>
+                        <span class="original-price">$<%= product.original_price.toFixed(2) %></span>
+                        <span class="promo-price">$<%= product.promo_price %></span>
+                        <span class="promo-badge">-<%= product.promo %>%</span>
+                    <% } else { %>
+                        $<%= product.original_price.toFixed(2) %>
+                    <% } %>
+                </div>
+                <p>SKU: <%= product.SKU %></p>
+                <a href="/product/<%= product.product_id %>">View Details</a>
+            </div>
+        <% }); %>
+    </div>
+    </body>
+</html>

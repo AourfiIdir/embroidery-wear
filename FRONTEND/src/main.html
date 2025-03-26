@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <title>Document</title>
+</head>
+
+<body>
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Navbar</title>
+    <link rel="stylesheet" href="/FRONTEND/src/styles/main.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+  </head>
+
+  <body>
+    <!-- navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="navbar-brand">
+          <img class="logo_img" src="/FRONTEND/assets/images/logo.png" alt="">
+        </div>
+        <!-- Hamburger Menu Button -->
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+          <span class="hamburger"></span>
+        </button>
+        <ul class="navbar-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="navbar-search">
+          <input type="text" id="search-input" placeholder="Search...">
+          <button id="search-button">Search</button>
+        </div>
+        <button class="navbar-cart" onclick="window.location.href='#cart'">
+          🛒 Cart
+        </button>
+        <div class="form" id="loginDiv">
+          <button type="button" class="btn btn-primary navbar-signin" data-bs-toggle="modal" data-bs-target="#register1"
+            data-bs-whatever="@mdo">Sign In</button>
+          <button type="button" class="btn btn-primary navbar-login" data-bs-toggle="modal" data-bs-target="#login"
+            data-bs-whatever="@mdo">Login</button>
+        </div>
+        <div class="form" id="logoutDiv" style="display: none;">
+          <button type="button" class="btn btn-primary navbar-signin" onclick="logout()">Sign Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MODALS PART -->
+    <!-- LOGIN MODAL -->
+
+    <div class="modal fade" id="login" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">LOGIN FORM</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="emailLogin" class="col-form-label">email</label>
+                <input type="email" class="form-control" id="emailLogin">
+              </div>
+              <div class="mb-3">
+                <label for="passwordLogin" class="col-form-label">PASSWORD</label>
+                <input type="password" class="form-control" id="passwordLogin">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="login()">login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END OF LOGIN MODAL -->
+
+    <!-- START REGISTER MODAL -->
+    <!-- START REGISTER MODAL 2 -->
+    <div class="modal fade" id="register2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Adress</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="textShipementRegister" class="col-form-label">ADRESS</label>
+                <input type="text" class="form-control" id="textShipementRegister">
+              </div>
+
+              <div class="input-group mb-3">
+                <label class="input-group-text" for="inputCountrySelect">Country</label>
+                <select class="form-select" id="inputCountrySelect">
+
+                  <option value="1">algerie</option>
+                  <option value="2">canada</option>
+                  <option value="3">america</option>
+                </select>
+              </div>
+              <div class="input-group mb-3">
+                <label class="input-group-text" for="inputStateSelect">State</label>
+                <select class="form-select" id="inputStateSelect">
+
+                  <option value="1">Bejaia</option>
+                  <option value="2">Setif</option>
+                  <option value="3">Alger</option>
+                </select>
+              </div>
+              <div class="input-group mb-3">
+                <label class="input-group-text" for="inputCitySelect">City</label>
+                <select class="form-select" id="inputCitySelect">
+
+                  <option value="1">Bejaia</option>
+                  <option value="2">Setif</option>
+                  <option value="3">Alger</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="zipCode" class="col-form-label">zipCode</label>
+                <input type="number" class="form-control" id="zipCode">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary navbar-signin" onclick="ShipementRegister()">end
+              register</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END REGISTER MODAL 2 -->
+
+
+    <!-- REGISTER MODAL1 -->
+    <div class="modal fade" id="register1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">REGISTER FORM</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label">first name</label>
+                <input type="text" class="form-control" id="nomRegister">
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">last name</label>
+                <input type="text" class="form-control" id="prenomRegister">
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">email</label>
+                <input type="email" class="form-control" id="emailRegister">
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">password</label>
+                <input type="password" class="form-control" id="passwordRegister">
+              </div>
+
+
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary navbar-signin" data-bs-toggle="modal"
+              data-bs-target="" data-bs-whatever="@mdo" onclick="register()" id="suivBtn">suivant</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END OF LOGIN MODAL -->
+    <!-- END REGISTER MDOAL -->
+    <!-- END OF MODALS PARTS -->
+
+    <!-- slider -->
+    <div class="slider-container">
+      <div class="slider">
+        <div class="slide active">
+          <img src="/FRONTEND/public/images/sliderPng1.jpg" alt="Image 1">
+        </div>
+        <div class="slide">
+          <img src="/FRONTEND/public/images/sliderPng2.jpg" alt="Image 2">
+        </div>
+        <div class="slide">
+          <img src="/FRONTEND/public/images/sliderPng3.jpg" alt="Image 3">
+        </div>
+
+      </div>
+    </div>
+    <!-- features -->
+
+    <div class="features">
+      <div class="icon-container">
+        <div class="icon-box">
+          <i class="fas fa-hand-paper"></i>
+          <p>Our workers are....</p>
+        </div>
+        <div class="icon-box">
+          <i class="fas fa-film"></i>
+          <p>the precise broadery is our best feature ....</p>
+        </div>
+        <div class="icon-box">
+          <i class="fas fa-tshirt"></i>
+          <p>the quality of our product is....</p>
+        </div>
+      </div>
+
+      <!-- end features -->
+      <!-- about -->
+      <div class="about">
+        <div class="text_about">
+          <h1>ABOUT</h1>
+          <h3>we are a specialized team on making personalized high quality brodery clothes including <span>T-shirts
+              sweatshirts pants socks</span></h3>
+        </div>
+      </div>
+      <!-- features  -->
+
+
+      <!-- products -->
+
+
+
+
+      <!-- footer -->
+      <div class="footer-dark">
+        <footer>
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6 col-md-3 item">
+                <h3>Services</h3>
+                <ul>
+                  <li><a href="#">broidery</a></li>
+                  <li><a href="#">Create your Logo</a></li>
+                  <li><a href="#"></a></li>
+
+                </ul>
+              </div>
+              <div class="col-sm-6 col-md-3 item">
+                <h3>About</h3>
+                <ul>
+                  <li><a href="#">Company</a></li>
+                  <li><a href="#">Team</a></li>
+                  <li><a href="#">Careers</a></li>
+                </ul>
+              </div>
+              <div class="col-sm-6 col-md-3 item">
+                <h3>Products</h3>
+                <ul>
+                  <li><a href="#">Shirts</a></li>
+                  <li><a href="#">Sweats</a></li>
+                  <li><a href="#">Others</a></li>
+                </ul>
+              </div>
+              <div class="col-md-3 item text">
+                <h3>Company Name</h3>
+                <p> esse exercitationem? Praesentium blanditiis, error nisi dicta reprehenderit numquam. Perspiciatis
+                  doloremque odit sint amet ipsam quasi voluptatum quidem.</p>
+              </div>
+              <div class="col item social"><a href="#"><i class="icon ion-social-facebook"></i></a><a href="#"><i
+                    class="icon ion-social-twitter"></i></a><a href="#"><i class="icon ion-social-snapchat"></i></a><a
+                  href="#"><i class="icon ion-social-instagram"></i></a></div>
+            </div>
+          </div>
+        </footer>
+      </div>
+      <script src="/FRONTEND/src/scripts/auth.js"></script>
+      <script src="/FRONTEND/src/scripts/main.js"></script>
+      <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+      
+  </body>
+
+  </html>
+</body>
+
+</html>

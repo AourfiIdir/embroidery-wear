@@ -2,6 +2,15 @@ let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
 
+
+//nav bar
+document.querySelector('.navbar-toggle').addEventListener('click', function () {
+    const navbarLinks = document.querySelector('.navbar-links');
+    navbarLinks.classList.toggle('active');
+});
+
+
+//slider
 function showSlide(index) {
     // Remove 'active' class from all slides
     slides.forEach((slide) => {

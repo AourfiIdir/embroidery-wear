@@ -1,3 +1,17 @@
 26/03
 render the cart list with delet buttons
-add auth in the user experciences
+add auth in the user experciencesdb.
+
+
+
+run(`CREATE TABLE IF NOT EXISTS \`Order\` (
+        order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_date DATETIME,
+        total_price DECIMAL(10,2),
+        Customer_customer INTEGER,
+        Payment_payments INTEGER,
+        Shipment_shipment INTEGER,
+        FOREIGN KEY (Customer_customer) REFERENCES Customer(customer_id),
+        FOREIGN KEY (Payment_payments) REFERENCES Payment(payment_id),
+        FOREIGN KEY (Shipment_shipment) REFERENCES Shipment(shipment_id)
+    )`, (err) => {

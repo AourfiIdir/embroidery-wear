@@ -1,0 +1,21 @@
+//query improvement:
+/////
+db.run for queries without returnng
+db.all for queries with returning
+
+////// if else in queries
+select sum(
+    IIF(condition,condiiton satisfied ,condition unsatisfied) as where to do the result
+)
+
+//when connecting tabels, if we dont have the connect key, (we need to make an query to get it) weuse this form
+select p.id from product p JOIN customer c ON the two tabels connect  + condition 
+
+
+
+`SELECT SUM(
+                    IIF(oi.promo = 0, 
+                        oi.price * oi.quantity, 
+                        oi.price * (100 - oi.promo) / 100 * oi.quantity
+                    )) AS total_price
+                    FROM Order_item oi`

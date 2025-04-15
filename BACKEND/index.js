@@ -3,11 +3,14 @@ import sqlite3 from "sqlite3";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config();
 
 const jwt_key = process.env.JWT_KEY;
 
 const app = express();
+app.use(cors());
+
 app.use(express.json());
 
 app.set("view engine", "ejs");
@@ -246,14 +249,53 @@ app.post("/login", (req, res) => {
         res.status(500).send("Internal Server Error");
       } else if (row) {
         // Generate a JWT token
-        const token = jwt.sign({ id: row.customer_id }, jwt_key);
-        res.json({ token: token }, { userid: row.customer_id });
+        //const token = jwt.sign({ id: row.customer_id }, jwt_key);
+        res.status(200).json({token: jwt.sign({ id: row.customer_id }, jwt_key), userid: row.customer_id});
       } else {
         res.status(404).send("User not found");
       }
     }
   );
+
 });
+//creat a middleware to check the user auths
+function auth(req,res,next){
+  const bearerToken = req.headers['authorization'];
+  const Token = bearerToken && bearerToken.split(' ')[1];
+  if(Token == null)res.status(401).json({error:"cant get the token"});
+  jwt.verify(Token,jwt_key,(err,user)=>{
+    if(err){
+      res.status(401).json({error:"the user is not  verified"});
+    }
+    req.id = user.id;
+    next();//continue the process
+  })
+}
+/*
+/////////////////////////////examplessss
+app.post("/posts",auth,(req,res)=>{
+  const {title,description} = req.body;
+  if(!title || !description){
+    return res.status(400).json({error: "All fields are required"});
+  })
+    db.run(`INSERT INTO posts (title,description) VALUES (?,?)`,[title,description],(err,row)=>{
+        if(err)res.status(400).json({error:"cant insert the post"});
+        res.status(200).send("post created succusssufully");
+      })
+    res.status(200).json({titl:title , desc:description});
+
+    note: we created the payload based on the user id so the objects is written like this: id:144551
+    function auth(req,res,next){
+      const bearerToken = req.headers['authrization'];
+      const token = bearerToken && bearerToken.split(' ')[1];
+      jwt.verify(token,jwt_key,(err,user)=>{
+          if(err)res.status(400).send("problem"); we dont use next here 
+          req.id = user.id;
+          next();
+        })
+  }
+*/
+
 
 // Get products by category name
 app.get("/category/:name", (req, res) => {
@@ -497,7 +539,7 @@ app.post("/createOrder/:clientId", (req, res) => {
                 // Create the order
                 db.run(
                   `INSERT INTO \`Order\` (order_date, total_price, Customer_customer, Payment_payments, Shipment_shipment)
-                           VALUES (?, ?, ?, ?, ?)`,
+                          VALUES (?, ?, ?, ?, ?)`,
                   [orderDate, totalPriceValue, clientId, 0, shipmentId],
                   function (err) {
                     if (err) {
@@ -537,56 +579,71 @@ app.post("/createOrder/:clientId", (req, res) => {
     );
   });
 });
-app.get("/getOrder/:orderId", (req, res) => {
+// Helper function
+const dbAll = (query, params) => new Promise((resolve, reject) => {
+  db.all(query, params, (err, rows) => err ? reject(err) : resolve(rows));
+});
+app.get("/getOrder/:orderId", async (req, res) => {
+  try {
     const orderId = req.params.orderId;
-    let itemRowsExt = [];
-    let shipementRowExt = {};
-    let customerRowExt = {};
-    let paymentRowExt = {};
-    db.serialize(()=>{
-        //get the order infos
-        db.all(`SELECT * FROM \`Order\` WHERE order_id  =?`, [orderId], (err, orderRows) => {
-            if (err) {
-                console.error("error in getting the order items");
-                return res.status(500).json({ error: "Internal Server Error" });
-            }
-            //**********identifier
-            const shipementId = orderRows[0].Shipment_shipment;
-            const customerId = orderRows[0].Customer_customer;
-            const paymentId  = orderRows[0].Payment_payments;
 
-            
-            
-            //get the items infos by the order id 
-            db.all(`SELECT o.quantity o.color o.size FROM Order_item o WHERE o.Order_order_id = ?`,[orderId],(err,itemRows)=>{
-                if(err){
-                    return res.status(500).send({"error":err});
-                }
-                itemRowsExt = itemRows;
-            })
-            //get the shipement infos
-            db.all(`SELECT s.address s.city s.state s.country s.zip_code FROM shipment s WHERE s.shipment_id = ?`,[shipementId],(err,shipementRows)=>{
-                if(err){
-                    return res.status(500).send({"error":err});
-                }
-                shipementRowExt = shipementRows;
-            })
-            //get the customer infos
-            db.all(`SELECT c.first_name c.last_name  FROM Customer c WHERE c.customer_id = ?`,[customerId],(err,customerRows)=>{
-                if(err){
-                    return res.status(500).send({"error":err});
-                }
-                customerRowExt = customerRows;
-            })
+    // 1. Get order info
+    const orderRows = await dbAll(
+      `SELECT * FROM \`Order\` WHERE order_id = ?`, 
+      [orderId]
+    );
 
-            //get the payment infos
+    if (!orderRows || orderRows.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
 
+    const order = orderRows[0];
+    const { Shipment_shipment, Customer_customer, Payment_payments } = order;
 
-            //finally returning a server rendered page with all those infos 
-        }
+    // 2. Run all parallel queries
+    const [items, shipment, customer, payment] = await Promise.all([
+      // Items query
+      dbAll(
+        `SELECT quantity, color, size FROM Order_item WHERE Order_order_id = ?`,
+        [orderId]
+      ),
+      
+      // Shipment query
+      dbAll(
+        `SELECT address, city, state, country, zip_code FROM shipment WHERE shipment_id = ?`,
+        [Shipment_shipment]
+      ),
+      
+      // Customer query
+      dbAll(
+        `SELECT first_name, last_name FROM Customer WHERE customer_id = ?`,
+        [Customer_customer]
+      ),
+      
+      // Payment query (optional)
+      Payment_payments ? 
+        dbAll(`SELECT * FROM Payment WHERE payment_id = ?`, [Payment_payments]) 
+        : Promise.resolve([])
+    ]);
 
-    )
-  })});
+    // 3. Format response
+    res.json({
+      order,
+      items,
+      shipment: shipment[0] || null,
+      customer: customer[0] || null,
+      payment: payment[0] || null
+    });
+
+  } catch (err) {
+    console.error("Error in /getOrder:", err);
+    res.status(500).json({ 
+      error: "Internal Server Error",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+});
+
 
 app.post("/addPayment", (req, res) => {
   const { payment_date, payment_method, Customer_customer, order_id } =

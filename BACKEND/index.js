@@ -238,7 +238,7 @@ app.post("/Shipment", (req, res) => {
 
 //login end point
 
-app.post("/login", (req, res) => {
+app.post("/login",(req, res) => {
   const { email, password } = req.body;
   db.get(
     `SELECT * FROM Customer WHERE email = ? AND password = ?`,
@@ -252,49 +252,14 @@ app.post("/login", (req, res) => {
         //const token = jwt.sign({ id: row.customer_id }, jwt_key);
         res.status(200).json({token: jwt.sign({ id: row.customer_id }, jwt_key), userid: row.customer_id});
       } else {
-        res.status(404).send("User not found");
+        res.status(401).send("User not found");
       }
     }
   );
 
 });
-//creat a middleware to check the user auths
-function auth(req,res,next){
-  const bearerToken = req.headers['authorization'];
-  const Token = bearerToken && bearerToken.split(' ')[1];
-  if(Token == null)res.status(401).json({error:"cant get the token"});
-  jwt.verify(Token,jwt_key,(err,user)=>{
-    if(err){
-      res.status(401).json({error:"the user is not  verified"});
-    }
-    req.id = user.id;
-    next();//continue the process
-  })
-}
-/*
-/////////////////////////////examplessss
-app.post("/posts",auth,(req,res)=>{
-  const {title,description} = req.body;
-  if(!title || !description){
-    return res.status(400).json({error: "All fields are required"});
-  })
-    db.run(`INSERT INTO posts (title,description) VALUES (?,?)`,[title,description],(err,row)=>{
-        if(err)res.status(400).json({error:"cant insert the post"});
-        res.status(200).send("post created succusssufully");
-      })
-    res.status(200).json({titl:title , desc:description});
 
-    note: we created the payload based on the user id so the objects is written like this: id:144551
-    function auth(req,res,next){
-      const bearerToken = req.headers['authrization'];
-      const token = bearerToken && bearerToken.split(' ')[1];
-      jwt.verify(token,jwt_key,(err,user)=>{
-          if(err)res.status(400).send("problem"); we dont use next here 
-          req.id = user.id;
-          next();
-        })
-  }
-*/
+
 
 
 // Get products by category name
@@ -395,14 +360,15 @@ app.get("/product/:id", (req, res) => {
         WHERE p.product_id = ?
     `,
     [productId],
-    (err, row) => {
+    (err,row) => {
       if (err) {
         console.error(err.message);
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
       // Render the template with the product details
-      res.render("product", { product: row });
+      //res.render("product", { product: row });
+      res.status(200).json({product:row});
     }
   );
 });
@@ -485,7 +451,20 @@ app.delete("/deleteItem/:id", (req, res) => {
 
 //end point to create an order
 //!!!! check the user authentification" in the front end we need to pass the token and check if the user is logged in or not
-app.post("/createOrder/:clientId", (req, res) => {
+//creat a middleware to check the user auths
+function auth(req,res,next){
+  const bearerToken = req.headers['authorization'];
+  const Token = bearerToken && bearerToken.split(' ')[1];
+  if(Token == null)res.status(401).json({error:"cant get the token"});
+  jwt.verify(Token,jwt_key,(err,user)=>{
+    if(err){
+      res.status(401).json({error:"the user is not  verified"});
+    }
+    req.id = user.id;
+    next();//continue the process
+  })
+}
+app.post("/createOrder/:clientId",auth,(req, res) => { //pass the bearer token and check it valunrability
   const clientId = req.params.clientId;
 
   db.serialize(() => {
@@ -665,6 +644,104 @@ app.post("/addPayment", (req, res) => {
     }
   );
 });
+
+
+
+
+//end point to get all the product with the promo
+app.get("/promo",(req,res)=>{
+  db.all(`SELECT * FROM Product WHERE promo !=0`,[],(err,rows)=>{
+    if(err){
+      res.status(401).json({error:err});
+    }
+    res.status(200).json({products:rows});
+  })
+})
+
+//search endpoint
+app.get("/search",(req,res)=>{
+    let items= req.query.item;
+    console.log(items);
+    db.all(`SELECT SKU FROM Product WHERE description LIKE ? OR SKU LIKE  ? LIMIT 5`,[`%${items}%`,`%${items}%`],(err,rows)=>{
+      if(err){
+        res.status(401).json({error:err});
+      }
+      res.json(rows);
+    })});
+// Full search endpoint
+app.get('/search/full', (req, res) => {
+  const term = req.query.term;
+  
+  db.all(
+    `SELECT * FROM Product WHERE SKU LIKE ? OR description LIKE ?`,
+    [`%${term}%`, `%${term}%`],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+
+
+
+
+//admin end poitns     //////////////permission required
+app.post('/addProduct',(req,res)=>{
+    const {productName , description, price,quantity,promo,image_path}  = req.body;
+    if(!productName || !description || !price || !quantity || !promo || !image_path){
+        res.status(400).json({ error: "Please enter a valid product name" });
+        return;
+    }
+    db.run(`INSERT INTO  Product (SKU,description,price,stock,promo,img_path) VALUES (?,?,?,?,?,?)`,[productName,description,price,quantity,promo,image_path],(err,row)=>{
+        if(err){
+            res.status(401).json({error:err});
+        }
+        res.status(200).json({"product is insered succussfully": true});
+    })
+});
+
+app.delete('/deleteProduct',(req,res)=>{
+    const productName = req.params.product;
+    if(!productName){
+        res.status(400).json({ error: "Please enter a valid product name" });
+    }
+    db.run(`DELETE FROM Product WHERE SKU = ?`,[productName],(err,row)=>{
+        if(err){
+            res.status(401).json({error:err});
+        }
+        res.status(200).json({"product is deleted successfully": true});
+    })
+})
+
+app.post('/addCategory',(req,res)=>{
+  const {SKU,description} = req.body;
+  if(!SKU,!description){
+    res.status(401).json({"enter a category":false});
+  }
+  db.run(`INSERT INTO Category (name,description) VALUES (?,?)`,[SKU , description],(err,rows)=>{
+    if(err){
+      res.status(401).json({"cant insert into the category table":false});
+    }
+    res.status(201).json({"table insered succussfully":true});
+  })
+})
+app.delete('/deleteCategory',(req,res)=>{
+  const categId = req.params.categoryId;
+  if(!categId){
+      res.status(400).json({ error: "Please enter a valid category id name" });
+  }
+  db.run(`DELETE FROM Category WHERE category_id = ?`,[categId],(err,row)=>{
+      if(err){
+          res.status(401).json({error:err});
+      }
+      res.status(200).json({"product is deleted successfully": true});
+  })
+})
+
+
 
 //server listening
 // Start the server

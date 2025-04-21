@@ -158,19 +158,19 @@
           <div class="modal-body">
             <form>
               <div class="mb-3">
-                <label for="recipient-name" class="col-form-label">first name</label>
+                <label for="nomRegister" class="col-form-label">first name</label>
                 <input type="text" class="form-control" id="nomRegister">
               </div>
               <div class="mb-3">
-                <label for="message-text" class="col-form-label">last name</label>
+                <label for="prenomRegister" class="col-form-label">last name</label>
                 <input type="text" class="form-control" id="prenomRegister">
               </div>
               <div class="mb-3">
-                <label for="message-text" class="col-form-label">email</label>
+                <label for="emailRegister" class="col-form-label">email</label>
                 <input type="email" class="form-control" id="emailRegister">
               </div>
               <div class="mb-3">
-                <label for="message-text" class="col-form-label">password</label>
+                <label for="passwordRegister" class="col-form-label">password</label>
                 <input type="password" class="form-control" id="passwordRegister">
               </div>
 
@@ -235,7 +235,12 @@
 
 
       <!-- products -->
-
+      
+      <div class="search-container">
+        <input type="text" id="search-input2" placeholder="Search for fruits...">
+        <div id="autocomplete-results"></div>
+        <div id="search-results"></div>
+      </div>
 
 
 
@@ -283,10 +288,13 @@
       </div>
       <script src="/FRONTEND/src/scripts/auth.js"></script>
       <script src="/FRONTEND/src/scripts/main.js"></script>
+      <script src="/FRONTEND/src/scripts/search.js"></script>
+
       <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
       
+  </div>
   </body>
 
   </html>

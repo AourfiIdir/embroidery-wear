@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hot Products</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+    <style>
+        li.page-item:nth-child(2) > a:nth-child(1){
+            background-color: black;
+        }
+
+        li.page-item:nth-child(n) > a:nth-child(n):hover{
+            background-color: coral;
+            color: #fff;
+            transition: 0.3s ease-in-out;
+        }
+        .pagination{
+            color: black;
+        }
+        .pagination a{
+            color: black;
+        }
+
+        .btnGroup{
+            background: black;
+            color:#fff;
+        }
+            
+        .btnGroup:hover{
+            transition: 0.3s ease-in-out;
+            background: coral;
+            color: #fff;
+        }
+        .OFBtn:hover{
+            transition: 0.3s ease-in-out;
+            background: red;
+            color: #fff;	
+        }
+
+        /* Loader style */
+        .loader {
+            display: none;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid coral;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 fixed-top">
+        <div class="container">
+            <a href="#"><img src="../../media/logo/logo.jpg" alt="logo" class="img-fluid ms-4" style="width: 60px;height: auto; border-radius: 20px"></a>
+            
+            <!-- Bouton hamburger -->
+            <div class="icon-wrapper">
+                <ul>
+                    <li class="nav-item d-flex align-items-center " id="humicon">
+                        <i class="bx bx-search-alt nav-link search-btn3" id="SearchIcon3"></i>
+                        <i class="bx bx-x .icon-wrapper3 close-btn3" style="font-size: 1.8rem"></i>
+                    </li>
+                </ul>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menu de navigation -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../homePage/index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../sepecialOffer/specialOffer1.html" style="color: coral">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#foter">Contact Us</a>
+                    </li>
+                    <!-- Icônes séparées -->
+                    <li class="nav-item d-flex align-items-center gap-2" id="humicon">
+                        <i class="bx bx-search-alt nav-link SearchIcon1 search-btn" id="SearchIcon2"></i>
+                        <i class="bx bx-x SearchIcon1 close-btn" id="closeIcon1" style="font-size: 1.8rem"></i>
+                        <a class="nav-link" href="#"><i class="bx bx-shopping-bag"></i></a>
+                        <a class="nav-link" href="../../AccountPage/index.html"><i class="bx bx-user"></i></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search here ..." name="">
+            </div>
+        </div>
+    </nav>
+
+    <section class="my-5 py-5" id="featured">
+        <div class="container mt-5 py-5">
+            <div class="d-flex justify-content-center ms-auto">
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                    <a href="../sepecialOffer/specialOffer1.html" class="btn btn-danger OFBtn">Special Offer</a>
+                    <a href="hot1.html" class="btn btnGroup">Hot</a>
+                    <a href="../hoodie/hoodie1.html" class="btn btnGroup">Hoodie</a>
+                    <a href="../Tshirt/Tshirt1.html" class="btn btnGroup">T-Shirt</a>
+                    <a href="../shirt/shirt1.html" class="btn btnGroup">Shirt</a>
+                    <a href="../jaket/jaket1.html" class="btn btnGroup">Jaket</a>
+                    <a href="../downJaket/downJaket1.html" class="btn btnGroup">Down Jacket</a>
+                    <a href="../pants/pants1.html" class="btn btnGroup">Pants</a>
+                </div>
+            </div>
+            <h2 class="font-weight-bold" id="category-title">Our Hot</h2>
+            <hr>
+            <p>Here you can check out the <span style="color: coral" id="category-name">best price</span> of this season on Imagine Wear</p>
+            
+            <!-- Loader -->
+            <div class="loader" id="loader"></div>
+            
+            <!-- Products Container -->
+            <div class="row mx-auto container text-center" id="products-container">
+                <!-- Products will be loaded here dynamically -->
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination mt-5" id="pagination-container">
+                    <!-- Pagination will be loaded here dynamically -->
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+    <footer class="mt-5 py-5" id="foter">
+        <div class="row container mx-auto">
+            <div class="footer-one col-lg-3 col-md-6 col-12 mt-5">
+                <a href="#"><img src="../../media/logo/logo.jpg" alt="logo" class="img-fluid ms-4" id="imgend" style="width: 80px;height: auto; border-radius: 20px"></a>
+                <p class="pt-3"><span style="color: coral;">IMAGINE WEAR</span> is the next step in our mission to improve commerce for everyone</p>
+            </div>
+            <div class="footer-one col-lg-3 col-md-6 col-12">
+                <h5 class="pb-2">featured</h5>
+                <ul class="text-uppercase list-unstyled">
+                    <li><a href="../../shopPage/Tshirt/Tshirt1.html">T-shert</a></li>
+                    <li><a href="../../shopPage/shirt/shirt1.html">Shert</a></li>
+                    <li><a href="../../shopPage/hoodie/hoodie1.html">Hoodie</a></li>
+                    <li><a href="hot1.html">Hot</a></li>
+                    <li><a href="../../shopPage/pants/pants1.html">Pants</a></li>
+                    <li><a href="../../shopPage/downJaket/downJaket1.html">Down Jacjet</a></li>
+                    <li><a href="../../shopPage/jaket/jaket1.html">Jacjet</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-one col-lg-3 col-md-6 col-12">
+                <h5 class="pb-2">Contact Us</h5>
+                <ul class="text-uppercase list-unstyled">
+                    <div>
+                        <h6 class="text-uppercase">Address</h6>
+                        <p>STREET Boukhiama, Bejaia, Algeria</p>
+                    </div> 
+
+                    <div>
+                        <h6 class="text-uppercase">Phone</h6>
+                        <p>+213552626468</p>
+                    </div>
+
+                    <div>
+                        <h6 class="text-uppercase">Email</h6>
+                        <p>imaginewear@gmail.com</p>
+                    </div>
+                </ul>
+            </div>
+
+            <div class="footer-one col-lg-3 col-md-6 col-12">
+                <h5 class="pb-2">Social Media</h5>
+                <ul class="text-uppercase list-unstyled">
+                    <div>
+                        <h6 class="text-uppercase">Instagram :</h6>
+                        <p>imaginewear</p>
+                    </div> 
+
+                    <div>
+                        <h6 class="text-uppercase">Facebook :</h6>
+                        <p>imaginewear</p>
+                    </div>
+
+                    <div>
+                        <h6 class="text-uppercase">X :</h6>
+                        <p>imagine-wear</p>
+                    </div>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright mt-2">
+            <div class="row container mx-auto">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <img src="../../media/payment/payment1.png" style="width: 200px">            
+                </div>
+                <div class="col-lg-4 col-md-6 col-12 text-nowrap">
+                    <p class="mt-2">Imagine Wear eCommerce © 2025. All Rights Reserved</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="../js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Show loader
+            document.getElementById('loader').style.display = 'block';
+            
+            // Get current category from URL
+            const currentPage = window.location.pathname.split('/').pop();
+            const categoryMap = {
+                'hot1.html': 'Hot',
+                'hoodie1.html': 'Hoodie',
+                'Tshirt1.html': 'T-Shirt',
+                'shirt1.html': 'Shirt',
+                'jaket1.html': 'Jaket',
+                'downJaket1.html': 'Down Jacket',
+                'pants1.html': 'Pants',
+                'specialOffer1.html': 'Special Offer'
+            };
+            
+            const category = categoryMap[currentPage] || 'Hot';
+            try {
+                // 1. Fetch products from API
+                const response = await fetch(`http://localhost:5000/category/${encodeURIComponent(category)}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const products = await response.json();
+                
+                // 2. Update category title
+                document.getElementById('category-title').textContent = `Our ${category}`;
+                document.getElementById('category-name').textContent = category.toLowerCase();
+                
+                // 3. Render products
+                const container = document.getElementById('products-container');
+                
+                if (products.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <h4>No products found in this category.</h4>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = products.map(product => `
+                        <div class="col-lg-3 col-md-4 col-12 mb-4">
+                            <div class="product card h-100">
+                                <img src="${product.img_path}" class="card-img-top img-fluid p-3" alt="${product.SKU}">
+                                <div class="card-body">
+                                    <div class="star mb-2">
+                                        ${'<i class="bx bxs-star"></i>'.repeat(5)}
+                                    </div>
+                                    <h5 class="p-name card-title">${product.SKU}</h5>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="p-price mb-0">$${product.price.toFixed(2)}</h4>
+                                        ${product.promo > 0 ? 
+                                            `<span class="badge bg-danger">${product.promo}% OFF</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <button class="buy-btn btn btn-dark w-100" 
+                                        onclick="window.location.href='/product.html?id=${product.product_id}'">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                // 4. Setup pagination
+                setupPagination(products.length, 12); // 12 products per page
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('products-container').innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <h4 class="text-danger">Error loading products. Please try again later.</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                // Hide loader
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+        
+        function setupPagination(totalProducts, productsPerPage) {
+            const totalPages = Math.ceil(totalProducts / productsPerPage);
+            const paginationContainer = document.getElementById('pagination-container');
+            
+            if (totalPages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+            
+            const currentPage = 1; // You can get this from URL params
+            
+            let paginationHTML = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>
+                </li>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                </li>`;
+            }
+            
+            paginationHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+                </li>`;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        function changePage(page) {
+            // Implement your page change logic here
+            console.log(`Changing to page ${page}`);
+            // Example: window.location.href = `hot${page}.html`;
+        }
+    </script>
+</body>
+</html>

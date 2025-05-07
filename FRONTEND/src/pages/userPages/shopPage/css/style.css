@@ -1,0 +1,488 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body{
+	font-family: 'Poppins' , sans-serif;
+	overflow-x: hidden;
+}
+
+h1{
+	font-size: 2.5rem;
+	font-weight: 700;
+}
+
+h1{
+	font-size: 2.5rem;
+	font-weight: 700;
+}
+
+h2{
+	font-size: 1.8rem;
+	font-weight: 600;
+}
+
+h3{
+	font-size: 1.4rem;
+	font-weight: 800;
+}
+
+h4{
+	font-size: 1.1rem;
+	font-weight: 600;
+}
+
+h5{
+	font-size: 1rem;
+	font-weight: 400;
+	color: #1d1d1d;
+}
+
+h6{
+	color: #D8D8D8;
+}
+
+button{
+	font-size: 0.8rem;
+	font-weight: 700;
+	outline: none;
+	border:none;
+	background-color: #1d1d1d;
+	color: aliceblue;
+	padding: 13px 30px;
+	text-transform: uppercase;
+	/*cursor: pointer;*/
+	transition: 0.3s ease;
+}
+
+button:hover{
+	background-color: coral;
+}
+
+hr{
+	width: 50px;
+	height: 2px;
+	opacity: 1;
+	background-color: orange;
+}
+
+.navbar{
+	font-size: 16px;
+	top: 0;
+	left: 0;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1)
+
+}
+
+.navbar-light .navbar-nav .nav-link{
+
+	padding: 0 20px;
+	color: black;
+	transition: 0.3s ease;
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar i:hover,
+.navbar-light .navbar-nav .nav-link.active
+.navbar i.active{
+	color: coral;
+}
+
+.navbar i{
+	font-size: 1.2rem;
+	padding: 0 7px;
+	cursor: pointer;
+	font-weight: 500;
+	transition: 0.3s ease;
+}
+
+.navbar a{
+	text-decoration: none;
+	color: black;
+}
+
+.navbar-light .navbar-toggler{
+	border:none;
+}
+
+@media only screen and (max-width: 991px){
+	.navbar-light .navbar-toggler{
+		padding: 0;
+		margin: 0;
+	}
+
+    #navbarSupportedContent > ul {
+    	margin: 1rem;
+    	justify-content: flex-end;
+    	text-align: right;
+    }
+
+    #closeIcon1{
+    	visibility: hidden;
+    }
+
+    #SearchIcon2{
+    	visibility: hidden;
+    }
+
+    .icon-wrapper{
+    	position: relative !important;
+    	opacity: 1 !important;
+    	visibility: visible !important;
+    	display: flex !important;
+    	align-items: center !important;
+    	right: -230px;
+    	z-index: 1100;
+    }
+
+    .close-btn3{
+    position: relative;
+    opacity: 0;
+	visibility: hidden;
+	scale:0;
+	margin-top: 15px;
+	right: -10px;	
+    }
+
+    .close-btn3.active{
+    opacity: 1;
+    visibility: visible;
+    transition: 0.9 ease-in-out;
+    scale:1;	
+    }
+
+    #SearchIcon3{
+    	position: relative;
+    	right: -50px;
+    	margin-top: 15px;
+    	transition: 0.9s ease-in-out;
+    }
+
+    #SearchIcon3.active{
+    	right: -15px;
+    }
+   
+
+    #humicon{
+    	justify-content: flex-end !important;
+    }
+
+    #navbarSupportedContent > ul > li:nth-child(n) > a{
+    		padding: 10px 0;
+        }
+
+    #navbarSupportedContent > ul > li:last-child {
+        margin:   0 -8px;
+        justify-content: flex-end;
+        
+    }
+}
+
+.navbar-toggler:focus, 
+.navbar-toggler:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+
+}
+
+.navbar-toggler {
+    border: none !important;
+}
+
+/* Changer la couleur des trois barres */
+.navbar-toggler-icon {
+    background-color: transparent;
+}
+
+/* Appliquer une couleur corail aux trois barres */
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    background-color: coral !important;
+}
+
+/* Changer le background en blanc et les barres en corail au survol */
+.navbar-toggler:hover {
+    background-color: white !important;
+}
+
+.navbar-toggler:hover .navbar-toggler-icon {
+    filter: invert(42%) sepia(95%) saturate(632%) hue-rotate(336deg) brightness(96%) contrast(93%);
+}
+
+.search-box{
+	position: absolute;
+	left: -100%;
+	width: 85%;
+	height: 100%;
+	display: flex;
+	background-color: #fff;
+	align-items: center;
+	padding: 0 30px;
+	transition: 0.9s ease-in-out;
+	padding-right: 70px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+	border:2px  solid coral;
+	border-radius: 50px 0 50px 0;
+}
+
+.search-box.active{ 
+	left: 0;
+}
+.SearchIcon1{
+	position:relative;
+	z-index: 10;
+}
+
+.search-box input{
+	width: 100%;
+	border:none;
+	outline: none;
+	height: 50px;
+	font-size: 1.25rem;
+	background: #fff;
+	border-bottom: 1px solid rgba(0,0,0,0.5);
+
+}
+
+
+.close-btn{
+	opacity: 0;
+	visibility: hidden;
+	scale:0;
+}
+.close-btn.active{
+opacity: 1;
+visibility: visible;
+transition: 0.9 ease-in-out;
+scale:1;
+}
+
+#SearchIcon2{
+	position: relative;
+	right: -50px;
+	transition: 0.9s ease-in-out;
+}
+
+#SearchIcon2.active{
+  right: -30px;
+}
+.icon-wrapper{
+	visibility:hidden; ;
+	opacity: 0;
+	display: none;
+}
+
+#home {
+	justify-content: center;
+    padding-left: 0;
+    display: flex !important;
+    align-items: center !important; 
+    justify-content: flex-start !important; /* Force l'alignement à gauche */
+    height: 100vh !important;
+    background: url('../media/cover/bearded-man-model-street.jpg') no-repeat center center/cover !important;
+    padding-left: 5% !important;
+    width: 100% !important;
+}
+
+#home .container {
+	text-align: center;
+    max-width: 600px !important; /* Évite que ça s’étale trop */
+    text-align: left !important; /* Force le texte à gauche */
+    margin-left: 5% !important;
+}
+
+
+
+#home span{
+   color: coral;
+
+}
+
+#home button {
+    background-color: black; /* Bouton noir */
+    color: white; /* Texte en blanc */
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#home button:hover{
+	background-color: coral;
+}
+
+#mandg{
+	border-radius: 20px 0;
+	width: 100px;
+}
+
+#new .one {
+    position: relative; /* Assure que .details se positionne à l'intérieur */
+    overflow: hidden; /* Évite les débordements */
+    
+}
+
+
+
+
+#new .one img{
+	width: 100%;
+	height: 100%;
+	height: 680px;
+	background-position:center center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+	transition: filter 0.5s ease-in-out;
+}
+
+#new .one .details{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	
+}
+
+
+#new .one:hover img{
+	filter: blur(5px);
+
+}
+
+#new .one:hover .details{
+	cursor: pointer;
+}
+
+#new .one .details button{
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 500;
+	margin-top: 50px;
+}
+
+#new .one:nth-child(1) .details{
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: flex-start;
+	text-align: start;
+	margin-left: 15px;
+	text-shadow: 0 0 10px coral, 0 0 20px coral;
+}
+
+#new .one:nth-child(2) .details{
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	text-shadow: 0 0 10px coral, 0 0 20px red;
+	color: white;
+}
+
+#new .one:nth-child(3) .details{
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: flex-end;
+	text-align: end;
+	text-shadow: 0 0 10px white, 0 0 20px green;
+	padding-right: 15px;
+	
+
+}
+
+/*product*/
+.product{
+	cursor: pointer;
+	margin-bottom: 2rem;
+}
+
+.product img{
+	transition: 0.3s all;
+}
+
+.product:hover img{
+	opacity: 0.7;
+}
+
+.product .buy-btn{
+  background-color: coral;
+  text-transform: translateY(20px);
+  opacity: 0;
+  transition: 0.3s all; 
+}
+
+.product:hover .buy-btn{
+    transform: translateY(0);
+    opacity: 1;	
+}
+.star{
+	padding: 10px 0;
+}
+
+.star i{
+   font-size: 0.8rem;
+   color: goldenrod;
+
+}
+
+#banner{
+    background-image: url("../media/cover/cover2.jpg");
+    width: 100%;
+    height: 60vh;
+    background-size: cover;
+    background-position: top 70px center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#banner .container{
+	margin-left: 80px;
+}
+#banner .container button{
+	background-color: coral;
+}
+
+footer{
+	background-color: #222222;
+}
+footer h5{
+	color: #D8D8D8;
+	font-weight: 700;
+	font-size: 1.2rem;
+}
+
+footer li{
+	padding-bottom: 4px;
+}
+
+footer li a{
+	font-size: 0.8rem;
+	color: #D8D8D8;
+	text-decoration: none;
+}
+footer li:hover a{
+	color: coral;
+}
+footer p{
+	color: #D8D8D8;
+	font-size: 0.8rem;
+}
+
+footer img {
+    position: relative;
+    left: -25px; /* Déplace légèrement à gauche */
+}
+

@@ -4,12 +4,13 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import cors from "cors";
+import { Roleauth,Userauth } from "./auths.js";
+import {ROLE} from "./Roles.js";
 dotenv.config();
-
 const jwt_key = process.env.JWT_KEY;
-
+const codeAdmin = process.env.AdminCode;
 const app = express();
-app.use(cors());
+app.use(cors()); // Add this before your routes
 
 app.use(express.json());
 
@@ -23,18 +24,23 @@ const db = new sqlite3.Database("BACKEND/DataBase/projectDB.db", (err) => {
 });
 //DATA BASE CREATION
 
-// Create tables and insert initial data
 
+
+// Create tables and insert initial data
 db.serialize(() => {
   db.run(
+
     `CREATE TABLE IF NOT EXISTS Customer (
         customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        first_name TEXT,
-        last_name TEXT,
-        email TEXT UNIQUE,
-        password TEXT,
-        shipping_address INTEGER,
-        FOREIGN KEY (shipping_address) REFERENCES Shipment(shipment_id)
+        first_name TEXT NOT NULL,
+        last_name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'customer',
+        shipping_address TEXT,
+        shipping_city TEXT,
+        shipping_state TEXT,
+        shipping_zip_code INTEGER
     )`,
     (err) => {
       if (err) {
@@ -44,61 +50,21 @@ db.serialize(() => {
       }
     }
   );
-
+  
   db.run(
-    `CREATE TABLE IF NOT EXISTS Shipment (
-        shipment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        address TEXT,
-        city TEXT,
-        state TEXT,
-        country TEXT,
-        zip_code TEXT,
-        Customer_custom INTEGER,
-        FOREIGN KEY (Customer_custom) REFERENCES Customer(customer_id)
-    )`,
-    (err) => {
-      if (err) {
-        console.error("PROBLEM IN CREATING THE SHIPMENT TABLE:", err.message);
-      } else {
-        console.log("Shipment table created");
-      }
-    }
-  );
-
-  db.run(
-    `CREATE TABLE IF NOT EXISTS Payment (
-        payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        payment_date DATETIME,
-        payment_method TEXT,
-        Customer_customer INTEGER UNIQUE,
-        order_id INTEGER unique,
-        FOREIGN KEY (order_id) REFERENCES \`Order\`(order_id),
+    `CREATE TABLE IF NOT EXISTS \`Order\` (
+        order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        total_price DECIMAL(10,2) NOT NULL,
+        Customer_customer INTEGER NOT NULL,
+        payment_method TEXT DEFAULT 'Livraison',
+        payment_status TEXT DEFAULT 'En attente',
+        payment_date DATETIME, 
         FOREIGN KEY (Customer_customer) REFERENCES Customer(customer_id)
     )`,
     (err) => {
       if (err) {
-        console.log("PROBLEM IN CREATING THE PAYMENT TABLE");
-      } else {
-        console.log("Payment table created");
-      }
-    }
-  );
-
-  db.run(
-    `CREATE TABLE IF NOT EXISTS \`Order\` (
-        order_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        order_date DATETIME,
-        total_price DECIMAL(10,2),
-        Customer_customer INTEGER,
-        Payment_payments INTEGER,
-        Shipment_shipment INTEGER,
-        FOREIGN KEY (Customer_customer) REFERENCES Customer(customer_id),
-        FOREIGN KEY (Payment_payments) REFERENCES Payment(payment_id),
-        FOREIGN KEY (Shipment_shipment) REFERENCES Shipment(shipment_id)
-    )`,
-    (err) => {
-      if (err) {
-        console.log("PROBLEM IN CREATING THE ORDER TABLE");
+        console.error("PROBLEM IN CREATING THE ORDER TABLE:", err.message);
       } else {
         console.log("Order table created");
       }
@@ -108,12 +74,12 @@ db.serialize(() => {
   db.run(
     `CREATE TABLE IF NOT EXISTS Category (
         category_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
+        name TEXT UNIQUE NOT NULL,
         description TEXT
     )`,
     (err) => {
       if (err) {
-        console.log("PROBLEM IN CREATING THE CATEGORY TABLE");
+        console.error("PROBLEM IN CREATING THE CATEGORY TABLE:", err.message);
       } else {
         console.log("Category table created");
       }
@@ -121,44 +87,44 @@ db.serialize(() => {
   );
 
   db.run(
+    `CREATE TABLE IF NOT EXISTS Order_item (
+        order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quantity INTEGER NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        size TEXT,
+        color TEXT,
+        name TEXT,
+        Order_order_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        FOREIGN KEY (Order_order_id) REFERENCES \`Order\`(order_id),
+        FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    )`,
+    (err) => {
+      if (err) {
+        console.error("PROBLEM IN CREATING THE ORDER_ITEM TABLE:", err.message);
+      } else {
+        console.log("Order_item table created");
+      }
+    }
+  );
+
+  db.run(
     `CREATE TABLE IF NOT EXISTS Product (
         product_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        SKU TEXT,
-        description TEXT,
-        price FLOAT,
-        stock INTEGER,
-        Category_category INTEGER,
+        SKU TEXT UNIQUE NOT NULL,
+        description TEXT NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        stock INTEGER NOT NULL DEFAULT 0,
+        Category_category INTEGER NOT NULL,
         promo INTEGER DEFAULT 0, 
         img_path TEXT,
         FOREIGN KEY (Category_category) REFERENCES Category(category_id)
     )`,
     (err) => {
       if (err) {
-        console.log("PROBLEM IN CREATING THE PRODUCT TABLE");
+        console.error("PROBLEM IN CREATING THE PRODUCT TABLE:", err.message);
       } else {
         console.log("Product table created");
-      }
-    }
-  );
-
-  db.run(
-    `CREATE TABLE IF NOT EXISTS Order_item (
-        order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        quantity INTEGER,
-        price DECIMAL(10,2),
-        size TEXT,
-        color TEXT,
-        name TEXT,
-        Product_prod INTEGER,
-        Order_order_id INTEGER,
-        FOREIGN KEY (Product_prod) REFERENCES Product(product_id),
-        FOREIGN KEY (Order_order_id) REFERENCES \`Order\`(order_id)
-    )`,
-    (err) => {
-      if (err) {
-        console.log("PROBLEM IN CREATING THE ORDER_ITEM TABLE");
-      } else {
-        console.log("Order_item table created");
       }
     }
   );
@@ -166,97 +132,112 @@ db.serialize(() => {
 
 //END POINTS
 
-//CREATE AN USER end point
-app.post("/register", (req, res) => {
-  const { first_name, last_name, email, password } = req.body;
+app.post("/register", async (req, res) => {
+  const {
+    // User details
+    first_name,
+    last_name,
+    email,
+    password,
+    AdminCode,
+    // Shipping details
+    address,
+    city,
+    state,
+    zip_code
+  } = req.body;
 
-  // Input validation
-  if (!first_name || !last_name || !email || !password) {
+  // Validate all required fields
+  if (!first_name || !last_name || !email || !password || !address || !city || !state ||!zip_code) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Hash the password
-  bcrypt.hash(password, 10, (err, hash) => {
-    if (err) {
-      console.error("Error hashing password:", err.message);
-      return res.status(500).json({ error: "Internal server error" });
-    }
+  // Role assignment (same as before)
+  let role = ROLE.USER;
+  if (AdminCode) {
+    if (AdminCode != codeAdmin) return res.status(400).json({ error: "Invalid admin code" });
+    role = ROLE.ADMIN;
+  }
 
-    // Insert user into the database
+  try {
+    // Hash password
+    const hash = await bcrypt.hash(password, 10);
+
+    // Insert into database (user + shipping in one query)
     db.run(
-      `INSERT INTO Customer (first_name, last_name, email,password) 
-             VALUES (?, ?, ?, ?)`,
-      [first_name, last_name, email, hash],
-      function (err) {
+      `INSERT INTO Customer (
+        first_name, last_name, email, password, role,
+        shipping_address, shipping_city, shipping_state,shipping_zip_code
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [first_name, last_name, email, hash, role, address, city, state,zip_code],
+      function(err) {
         if (err) {
-          console.error(
-            "Error inserting data into Customer table:",
-            err.message
-          );
-
-          // Handle unique constraint violation (email already exists)
           if (err.message.includes("UNIQUE constraint failed")) {
-            return res.status(409).json({ error: "Email already in use" });
+            return res.status(409).json({ error: "Email already exists" });
           }
-
-          return res.status(500).json({ error: "Internal server error" });
+          throw err;
         }
 
+
         // Success response
-        console.log("User registered successfully");
-        res.status(201).json({ message: "User created successfully" });
+        res.status(201).json({
+          message: "User and shipping address saved successfully",
+          userId: this.lastID,
+        });
       }
     );
-  });
-});
-
-app.post("/Shipment", (req, res) => {
-  const { address, country, city, state, zip_code } = req.body;
-
-  // Input validation
-  if (!address || !city || !state || !country || !zip_code) {
-    return res.status(400).json({ error: "All fields are required" });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  // Insert shipment into the database
-  db.run(
-    `INSERT INTO Shipment (address, city, state, country, zip_code) 
-         VALUES ( ?, ?, ?, ?, ?)`,
-    [address, city, state, country, zip_code],
-    function (err) {
-      if (err) {
-        console.error("Error inserting data into Shipment table:", err.message);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-
-      // Success response
-      console.log("Shipment created successfully");
-      res.status(201).json({ message: "Shipment created successfully" });
-    }
-  );
 });
 
-//login end point
-
-app.post("/login",(req, res) => {
+ app.post("/login", (req, res) => {
   const { email, password } = req.body;
+  
+  // 1. First find user by email only
   db.get(
-    `SELECT * FROM Customer WHERE email = ? AND password = ?`,
-    [email, password],
-    (err, row) => {
+    `SELECT * FROM Customer WHERE email = ?`,
+    [email],
+    (err, user) => {
       if (err) {
         console.error(err.message);
-        res.status(500).send("Internal Server Error");
-      } else if (row) {
-        // Generate a JWT token
-        //const token = jwt.sign({ id: row.customer_id }, jwt_key);
-        res.status(200).json({token: jwt.sign({ id: row.customer_id }, jwt_key), userid: row.customer_id});
-      } else {
-        res.status(401).send("User not found");
+        return res.status(500).json({ error: "Internal Server Error" });
       }
+      
+      if (!user) {
+        // Don't reveal if user exists or not
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      // 2. Compare provided password with stored hash
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) {
+          console.error(err.message);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+        
+        if (!isMatch) {
+          return res.status(401).json({ error: "Invalid credentials" });
+        }
+        
+        // 3. If match, generate JWT
+        const payload = {
+          id: user.customer_id,
+          role: user.role
+        };
+        
+        const token = jwt.sign(payload, jwt_key);
+        
+        // 4. Return token (omit sensitive data)
+        res.status(200).json({
+          token,
+          userid: user.customer_id,
+          role: user.role
+        });
+      });
     }
   );
-
 });
 
 
@@ -301,12 +282,13 @@ app.get("/category/:name", (req, res) => {
           original_price: product.price,
           has_promo: false,
         };
-      });
+      }); 
       // Render the template with the products and category name
-      res.render("category", {
-        products: processedPorducts,
-        category: categoryName,
-      });
+      //res.render("category", {
+      //  products: processedPorducts,
+      //  category: categoryName,
+      //});
+      res.status(200).json(processedPorducts); 
     }
   );
 });
@@ -434,6 +416,7 @@ app.get("/getCartItems", (req, res) => {
   });
 });
 
+
 //end point to delete an item from the cart
 app.delete("/deleteItem/:id", (req, res) => {
   const itemId = req.params.id;
@@ -451,112 +434,129 @@ app.delete("/deleteItem/:id", (req, res) => {
 
 //end point to create an order
 //!!!! check the user authentification" in the front end we need to pass the token and check if the user is logged in or not
-//creat a middleware to check the user auths
-function auth(req,res,next){
-  const bearerToken = req.headers['authorization'];
-  const Token = bearerToken && bearerToken.split(' ')[1];
-  if(Token == null)res.status(401).json({error:"cant get the token"});
-  jwt.verify(Token,jwt_key,(err,user)=>{
-    if(err){
-      res.status(401).json({error:"the user is not  verified"});
+app.post("/createOrder", Userauth, Roleauth([ROLE.USER]), async (req, res) => {
+  try {
+    const clientId = req.user.id; // Get from auth token
+
+    // Start transaction
+    await new Promise((resolve, reject) => {
+      db.run("BEGIN TRANSACTION", (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    // 1. Verify cart has items and get total price in one query
+    const cartItems = await new Promise((resolve, reject) => {
+      db.get(
+        `SELECT 
+          COUNT(*) AS itemCount,
+          SUM(oi.price * oi.quantity) AS total_price
+         FROM Order_item oi
+         WHERE oi.Order_order_id IS NULL`,
+        [],
+        (err, row) => {
+          if (err) return reject(err);
+          resolve(row);
+        }
+      );
+    });
+
+    if (!cartItems || cartItems.itemCount === 0) {
+      return res.status(400).json({ error: "No items in the cart" });
     }
-    req.id = user.id;
-    next();//continue the process
-  })
-}
-app.post("/createOrder/:clientId",auth,(req, res) => { //pass the bearer token and check it valunrability
-  const clientId = req.params.clientId;
 
-  db.serialize(() => {
-    // First check if there are items in the cart
-    db.get(
-      `SELECT EXISTS (SELECT 1 FROM Order_item) AS hasItems`,
-      [],
-      (err, row) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Internal Server Error in verifying if the cart items has items" });
+    // 2. Get customer shipping info (from Customer table now)
+    const customer = await new Promise((resolve, reject) => {
+      db.get(
+        `SELECT 
+          shipping_address, shipping_city, 
+          shipping_state, shipping_zip_code
+         FROM Customer 
+         WHERE customer_id = ?`,
+        [clientId],
+        (err, row) => {
+          if (err) return reject(err);
+          resolve(row);
         }
+      );
+    });
 
-        if (!row.hasItems) {
-          return res.status(400).json({ error: "No items in the cart" });
+    if (!customer || !customer.shipping_address) {
+      return res.status(400).json({ error: "No shipping address found for customer" });
+    }
+
+    // 3. Create the order (with shipping info)
+    const orderDate = new Date().toISOString();
+    const orderId = await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO \`Order\` (
+          order_date, total_price, Customer_customer,
+          shipping_address, shipping_city, shipping_state, shipping_zip_code,
+          payment_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')`,
+        [
+          orderDate, 
+          cartItems.total_price, 
+          clientId,
+          customer.shipping_address,
+          customer.shipping_city,
+          customer.shipping_state,
+          customer.shipping_zip_code
+        ],
+        function(err) {
+          if (err) return reject(err);
+          resolve(this.lastID);
         }
+      );
+    });
 
-        // Next get the shipment ID
-        db.get(
-          `SELECT s.shipment_id FROM Shipment s JOIN Customer c ON ? = s.Customer_custom`,
-          [clientId],
-          (err, shipment) => {
-            if (err) {
-              console.error(err);
-              return res.status(500).json({ error: "Internal Server Error in selecting the shipement id that matchs with the right customer" });
-            }
+    // 4. Update order items
+    await new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE Order_item 
+         SET Order_order_id = ?
+         WHERE Order_order_id IS NULL`,
+        [orderId],
+        (err) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
 
-            if (!shipment) {
-              return res
-                .status(400)
-                .json({ error: "No shipment found for customer" });
-            }
+    // Commit transaction
+    await new Promise((resolve, reject) => {
+      db.run("COMMIT", (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
 
-            const shipmentId = shipment.shipment_id;
-            const orderDate = new Date().toISOString();
-
-            // Then calculate the total price
-            db.get(
-              `SELECT SUM(o.price * o.quantity) AS total_price FROM Order_item o WHERE o.Order_order_id IS NULL`,
-              [],
-              (err, totalPrice) => {
-                if (err) {
-                  console.error(err);
-                  return res
-                    .status(500)
-                    .json({ error: "Internal Server Error in calculating the sum of the order" });
-                }
-
-                const totalPriceValue = totalPrice.total_price;
-
-                // Create the order
-                db.run(
-                  `INSERT INTO \`Order\` (order_date, total_price, Customer_customer, Payment_payments, Shipment_shipment)
-                          VALUES (?, ?, ?, ?, ?)`,
-                  [orderDate, totalPriceValue, clientId, 0, shipmentId],
-                  function (err) {
-                    if (err) {
-                      console.error(err);
-                      return res
-                        .status(500)
-                        .json({ error: "Internal Server Error in inserting to order table" });
-                    }
-
-                    const orderId = this.lastID;
-
-                    // Finally update the order items
-                    db.run(
-                      `UPDATE Order_item SET Order_order_id = ? WHERE Order_order_id IS NULL`,
-                      [orderId],
-                      (err) => {
-                        if (err) {
-                          console.error(err);
-                          return res
-                            .status(500)
-                            .json({ error: "Internal Server Error in updating the order items" });
-                        }
-
-                        res.status(200).json({
-                          message: "Order created successfully",
-                          orderId: orderId,
-                        });
-                      }
-                    );
-                  }
-                );
-              }
-            );
-          }
-        );
+    res.status(201).json({
+      message: "Order created successfully",
+      orderId: orderId,
+      total: cartItems.total_price,
+      shippingAddress: {
+        address: customer.shipping_address,
+        city: customer.shipping_city,
+        state: customer.shipping_state,
+        zip: customer.shipping_zip_code
       }
-    );
-  });
+    });
+
+  } catch (err) {
+    // Rollback on error
+    await new Promise((resolve) => {
+      db.run("ROLLBACK", () => resolve());
+    });
+    
+    console.error("Order creation error:", err);
+    res.status(500).json({ 
+      error: "Failed to create order",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
 });
 // Helper function
 const dbAll = (query, params) => new Promise((resolve, reject) => {
@@ -624,29 +624,6 @@ app.get("/getOrder/:orderId", async (req, res) => {
 });
 
 
-app.post("/addPayment", (req, res) => {
-  const { payment_date, payment_method, Customer_customer, order_id } =
-    req.body;
-  if (!payment_date || !payment_method || !Customer_customer || !order_id) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-  db.run(
-    `INSERT INTO Payment (payment_date, payment_method, Customer_customer, order_id) VALUES (?, ?, ?, ?)`,
-    [payment_date, payment_method, Customer_customer, order_id],
-    function (err) {
-      if (err) {
-        console.error(err.message);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-      // Success response
-      console.log("Payment created successfully");
-      res.status(201).json({ message: "Payment created successfully" });
-    }
-  );
-});
-
-
-
 
 //end point to get all the product with the promo
 app.get("/promo",(req,res)=>{
@@ -688,35 +665,71 @@ app.get('/search/full', (req, res) => {
 
 
 
-//admin end poitns     //////////////permission required
-app.post('/addProduct',(req,res)=>{
-    const {productName , description, price,quantity,promo,image_path}  = req.body;
-    if(!productName || !description || !price || !quantity || !promo || !image_path){
-        res.status(400).json({ error: "Please enter a valid product name" });
-        return;
-    }
-    db.run(`INSERT INTO  Product (SKU,description,price,stock,promo,img_path) VALUES (?,?,?,?,?,?)`,[productName,description,price,quantity,promo,image_path],(err,row)=>{
-        if(err){
-            res.status(401).json({error:err});
-        }
-        res.status(200).json({"product is insered succussfully": true});
-    })
+// Admin endpoint - permission required
+app.post('/addProduct', Userauth, Roleauth(ROLE.ADMIN), (req, res) => {
+  const { productName, description, price, quantity, promo, image_path, categoryName } = req.body;
+  
+  // Validate all required fields
+  if (!productName || !description || !price || !quantity || !promo || !image_path || !categoryName) {
+      return res.status(400).json({ error: "All fields are required" });
+  }
+
+  
+
+  // Start transaction
+  db.serialize(() => {
+      db.get(`SELECT category_id FROM Category WHERE name = ?`, [categoryName], (err, category) => {
+          if (err) {
+              return res.status(500).json({ error: "Database error", details: err.message });
+          }
+          
+          if (!category) {
+              return res.status(404).json({ error: "Category not found" });
+          }
+
+          db.run(
+              `INSERT INTO Product (SKU, description, price, stock, promo, img_path, Category_category) 
+               VALUES (?, ?, ?, ?, ?, ?, ?)`,
+              [productName, description, price, quantity, promo, image_path, category.category_id],
+              function(err) {
+                  if (err) {
+                      return res.status(500).json({ error: "Failed to add product", details: err.message });
+                  }
+                  
+                  res.status(201).json({ 
+                      success: true,
+                      message: "Product added successfully",
+                      productId: this.lastID
+                  });
+              }
+          );
+      });
+  });
 });
 
-app.delete('/deleteProduct',(req,res)=>{
-    const productName = req.params.product;
+app.delete('/deleteProduct',Userauth,Roleauth(ROLE.ADMIN),(req,res)=>{
+    const {productName} = req.body;
     if(!productName){
         res.status(400).json({ error: "Please enter a valid product name" });
     }
-    db.run(`DELETE FROM Product WHERE SKU = ?`,[productName],(err,row)=>{
+    db.all(`SELECT 1 FROM Product WHERE SKU = ?`,[productName],(err,product)=>{
         if(err){
-            res.status(401).json({error:err});
+            res.status(401).json({"error":err});
         }
-        res.status(200).json({"product is deleted successfully": true});
+        if(product.length ===0){
+          res.status(404).json({"error":"the product not found"});
+        }
+        db.run(`DELETE FROM Product WHERE SKU = ?`,[productName],(err,row)=>{
+          if(err){
+              res.status(401).json({error:err});
+          }
+          res.status(200).json({"product is deleted successfully": true});
+      })
     })
+    
 })
 
-app.post('/addCategory',(req,res)=>{
+app.post('/addCategory',Userauth,Roleauth(ROLE.ADMIN),(req,res)=>{
   const {SKU,description} = req.body;
   if(!SKU,!description){
     res.status(401).json({"enter a category":false});
@@ -728,7 +741,7 @@ app.post('/addCategory',(req,res)=>{
     res.status(201).json({"table insered succussfully":true});
   })
 })
-app.delete('/deleteCategory',(req,res)=>{
+app.delete('/deleteCategory',Userauth,Roleauth(ROLE.ADMIN),(req,res)=>{
   const categId = req.params.categoryId;
   if(!categId){
       res.status(400).json({ error: "Please enter a valid category id name" });
@@ -745,7 +758,7 @@ app.delete('/deleteCategory',(req,res)=>{
 
 //server listening
 // Start the server
-app.listen(3000, () => {
+app.listen(5000, () => {
   console.log("Server is running on port 3000");
 });
 

@@ -28,3 +28,67 @@ closeBtnSmall.onclick = function(){
   closeBtnSmall.classList.remove('active');
   searchBtnSmall.classList.remove('active');
 }
+
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const addIcon = document.getElementById('admin-add-icon');
+  
+  // Hide by default (until we verify admin status)
+  addIcon.style.display = 'none';
+
+  const token = localStorage.getItem('token');
+  if (!token) return; // Not logged in → keep hidden
+  try {
+    const response = await fetch('http://localhost:5000/isAdmin', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) throw new Error("Not an admin");
+    
+    const { isAdmin } = await response.json();
+    
+    if (isAdmin) {
+      addIcon.style.display = 'block'; // Show if admin
+      addIcon.querySelector('i').style.visibility = 'visible';
+      addIcon.querySelector('i').style.opacity = '1';
+    }
+  } catch (error) {
+    console.error("Admin check failed:", error);
+    addIcon.style.display = 'none'; // Ensure hidden on error
+  }
+})
+
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const removeIcon = document.getElementById('admin-remove-icon');
+  
+  // Hide by default (until we verify admin status)
+  removeIcon.style.display = 'none';
+
+  const token = localStorage.getItem('token');
+  if (!token) return; // Not logged in → keep hidden
+  try {
+    const response = await fetch('http://localhost:5000/isAdmin', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) throw new Error("Not an admin");
+    
+    const { isAdmin } = await response.json();
+    
+    if (isAdmin) {
+      removeIcon.style.display = 'block'; // Show if admin
+      removeIcon.querySelector('i').style.visibility = 'visible';
+      removeIcon.querySelector('i').style.opacity = '1';
+    }
+  } catch (error) {
+    console.error("Admin check failed:", error);
+    removeIcon.style.display = 'none'; // Ensure hidden on error
+  }
+})

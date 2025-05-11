@@ -63,54 +63,60 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 fixed-top">
         <div class="container">
-            <a href="#"><img src="../../media/logo/logo.jpg" alt="logo" class="img-fluid ms-4" style="width: 60px;height: auto; border-radius: 20px"></a>
-            
-            <!-- Bouton hamburger -->
-            <div class="icon-wrapper">
-                <ul>
-                    <li class="nav-item d-flex align-items-center " id="humicon">
-                        <i class="bx bx-search-alt nav-link search-btn3" id="SearchIcon3"></i>
-                        <i class="bx bx-x .icon-wrapper3 close-btn3" style="font-size: 1.8rem"></i>
-                    </li>
-                </ul>
-            </div>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Menu de navigation -->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../../homePage/index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../sepecialOffer/specialOffer1.html" style="color: coral">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#foter">Contact Us</a>
-                    </li>
-                    <!-- Icônes séparées -->
-                    <li class="nav-item d-flex align-items-center gap-2" id="humicon">
-                        <i class="bx bx-search-alt nav-link SearchIcon1 search-btn" id="SearchIcon2"></i>
-                        <i class="bx bx-x SearchIcon1 close-btn" id="closeIcon1" style="font-size: 1.8rem"></i>
-                        <a class="nav-link" href="#"><i class="bx bx-shopping-bag"></i></a>
-                        <a class="nav-link" href="../../AccountPage/index.html"><i class="bx bx-user"></i></a>
-                    </li>
-                </ul>
-            </div>
-            <div class="search-box">
-                <input type="text" placeholder="Search here ..." name="">
-            </div>
+          <a href="#"><img src="../media/logo/logo.jpg" alt="logo" class="img-fluid ms-4" style="width: 60px;height: auto; border-radius: 20px"></a>
+          
+          <!-- Bouton hamburger -->
+          <div class="icon-wrapper">
+            <ul>
+              <li class="nav-item d-flex align-items-center " id="humicon">
+                <i class="bx bx-search-alt nav-link search-btn3" id="SearchIcon3"></i>
+                <i class="bx bx-x .icon-wrapper3 close-btn3" style="font-size: 1.8rem"></i>
+              </li>
+            </ul>
+          </div>
+      
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <!-- Menu de navigation -->
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/FRONTEND/src/pages/userPages/homePage/index.html style="color: coral">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/FRONTEND/src/pages/userPages/shopPage/shirt/shirt1.html">Shop</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Blog</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#foter">Contact Us</a>
+              </li>
+              <!-- Icônes séparées -->
+              <li class="nav-item d-flex align-items-center gap-2" id="humicon">
+                <i class="bx bx-search-alt nav-link SearchIcon1 search-btn" id="SearchIcon2"></i>
+                <i class="bx bx-x SearchIcon1 close-btn" id="closeIcon1" style="font-size: 1.8rem"></i>
+                <a class="nav-link" href="/FRONTEND/src/pages/userPages/cart/detailsP.html"><i class="bx bx-shopping-bag"></i></a>
+                
+                <!-- Dynamic User/Login/Logout Section -->
+                <div id="auth-section">
+                  <!-- This will be populated by JavaScript based on login status -->
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="search-container">
+            <input type="text" placeholder="Search here ..." name="" id="search-input2">
+            <div id="autocomplete-results"></div>
+            <div id="search-results"></div>
+          </div>
         </div>
-    </nav>
+      </nav>
 
     <section class="my-5 py-5" id="featured">
         <div class="container mt-5 py-5">
@@ -159,7 +165,7 @@
                     <li><a href="../../shopPage/Tshirt/Tshirt1.html">T-shert</a></li>
                     <li><a href="../../shopPage/shirt/shirt1.html">Shert</a></li>
                     <li><a href="../../shopPage/hoodie/hoodie1.html">Hoodie</a></li>
-                    <li><a href="hot1.html">Hot</a></li>
+                    <li><a href="../../shopPage/hot/hot1.html">Hot</a></li>
                     <li><a href="../../shopPage/pants/pants1.html">Pants</a></li>
                     <li><a href="../../shopPage/downJaket/downJaket1.html">Down Jacjet</a></li>
                     <li><a href="../../shopPage/jaket/jaket1.html">Jacjet</a></li>
@@ -240,7 +246,7 @@
                 'specialOffer1.html': 'Special Offer'
             };
             
-            const category = categoryMap[currentPage] || 'Hot';
+            const category = categoryMap[currentPage];
             try {
                 // 1. Fetch products from API
                 const response = await fetch(`http://localhost:5000/category/${encodeURIComponent(category)}`);
@@ -279,7 +285,7 @@
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0">
                                     <button class="buy-btn btn btn-dark w-100" 
-                                        onclick="window.location.href='/product.html?id=${product.product_id}'">
+                                        onclick="window.location.href='../product.html?id=${product.product_id}'">
                                         View Details
                                     </button>
                                 </div>
@@ -342,5 +348,6 @@
             // Example: window.location.href = `hot${page}.html`;
         }
     </script>
+    <script src="/FRONTEND/src/pages/userPages/homePage/js/loginLogic.js"></script>
 </body>
 </html>

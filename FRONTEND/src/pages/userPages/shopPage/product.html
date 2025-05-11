@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7ff;
+        }
+        
+        .product-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-gallery img {
+            max-height: 500px;
+            object-fit: contain;
+        }
+        
+        .product-title {
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+        
+        .discount-badge {
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .add-to-cart {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .add-to-cart:hover {
+            background: var(--secondary);
+        }
+        
+        #loader {
+            display: none;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid coral;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .cart-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 300px;
+}
+
+.cart-counter {
+    display: none;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: coral;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 20px;
+}
+    </style>
+</head>
+<body>
+    
+
+    <!-- Product Details Section -->
+    <section class="my-5 py-5">
+        <div class="container">
+            <div id="loader"></div>
+            
+            <div class="product-container" id="product-details" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="product-gallery text-center">
+                            <img id="product-image" class="img-fluid" src="" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="product-title" id="product-name"></h1>
+                        
+                        <div class="rating mb-3">
+                            <!-- Étoiles de notation -->
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <span class="ms-2">(42 reviews)</span>
+                        </div>
+                        
+                        <div class="price-container mb-4">
+                            <span class="price" id="current-price"></span>
+                            <span class="original-price" id="original-price"></span>
+                            <span class="discount-badge ms-2" id="discount-badge"></span>
+                        </div>
+                        
+                        <p class="mb-4" id="product-description"></p>
+                        
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="quantity-selector me-3">
+                                <button class="btn btn-outline-secondary">-</button>
+                                <input type="number" value="1" min="1" class="form-control text-center" style="width: 60px; display: inline-block;">
+                                <button class="btn btn-outline-secondary">+</button>
+                            </div>
+                            <div class="stock-status" id="stock-status"></div>
+                        </div>
+                        <!-- Ajoutez dans la section produit -->
+<div class="mb-4">
+    <label for="selected-size" class="form-label">Size</label>
+    <select class="form-select" id="selected-size">
+        <option value="S">Small (S)</option>
+        <option value="M" selected>Medium (M)</option>
+        <option value="L">Large (L)</option>
+        <option value="XL">Extra Large (XL)</option>
+    </select>
+</div>
+
+<div class="mb-4">
+    <label for="selected-color" class="form-label">Color</label>
+    <select class="form-select" id="selected-color">
+        <option value="Black">Black</option>
+        <option value="White">White</option>
+        <option value="Blue">Blue</option>
+        <option value="Red">Red</option>
+    </select>
+</div>
+
+<!-- Modifiez l'icône du panier dans la navigation -->
+<a class="nav-link position-relative" href="/cart.html">
+    <i class="bx bx-shopping-bag"></i>
+    <span class="cart-counter"></span>
+</a>
+                        <button class="btn add-to-cart btn-lg w-100 mb-4" id="addToCart">
+                            <i class="bx bx-cart me-2"></i> Add to Cart
+                        </button>
+                        
+                        <div class="product-meta">
+                            <div class="mb-2"><strong>SKU:</strong> <span id="product-sku"></span></div>
+                            <div class="mb-2"><strong>Category:</strong> <span id="product-category"></span></div>
+                            <div><strong>Availability:</strong> <span id="availability"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="error-message" class="text-center py-5" style="display: none;">
+                <h4 class="text-danger">Product not found</h4>
+                <p>We couldn't find the product you're looking for.</p>
+                <a href="/" class="btn btn-primary">Back to Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (identique à votre page category) -->
+    <footer class="mt-5 py-5" id="foter">
+        <!-- ... Votre code de footer existant ... -->
+    </footer>
+
+    <script>
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+
+            
+            // Afficher le loader
+            document.getElementById('loader').style.display = 'block';
+            
+            // Récupérer l'ID du produit depuis l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            
+            if (!productId) {
+                showError();
+                return;
+            }
+            
+            // Récupérer les détails du produit
+            fetch(`http://localhost:5000/product/${productId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.product) throw new Error('Product not found');
+                    renderProduct(data.product);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError();
+                })
+                .finally(() => {
+                    document.getElementById('loader').style.display = 'none';
+                });
+        });
+        function setupAddToCart() {
+    const addToCartBtn = document.querySelector('.add-to-cart');
+    const quantityInput = document.querySelector('.quantity-input');
+    
+    addToCartBtn.addEventListener('click', async function() {
+        // Récupérer l'ID du produit depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        
+        // Récupérer les données du produit
+        const product = await getProductDetails(productId);
+        
+        if (!product) {
+            alert('Product not available');
+            return;
+        }
+        
+        // Préparer les données pour l'API
+        const cartItem = {
+            product_id: productId,
+            quantity: parseInt(quantityInput.value),
+            color: document.getElementById('selected-color').value || 'Black', // Ajoutez un sélecteur de couleur
+            size: document.getElementById('selected-size').value || 'M',      // Ajoutez un sélecteur de taille
+            uniPrice: product.promo > 0 
+                ? (product.price * (100 - product.promo) / 100).toFixed(2)
+                : product.price.toFixed(2)
+        };
+        
+        // Envoyer au serveur
+        try {
+            const response = await fetch('/addToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cartItem)
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to add to cart');
+            }
+            
+            // Succès
+            showCartNotification(product.SKU, cartItem.quantity);
+            updateCartCounter(); // Mettre à jour le compteur du panier
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message);
+        }
+    });
+}
+
+// Fonction pour afficher une notification
+function showCartNotification(productName, quantity) {
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.innerHTML = `
+        <div class="alert alert-success d-flex align-items-center">
+            <i class="bx bx-check-circle me-2"></i>
+            ${quantity} × ${productName} added to cart!
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Disparaît après 3 secondes
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Fonction pour mettre à jour le compteur du panier
+async function updateCartCounter() {
+    try {
+        const response = await fetch('/getCartItems');
+        const data = await response.json();
+        
+        if (data.items) {
+            const totalItems = data.items.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCounter = document.querySelector('.cart-counter');
+            
+            if (cartCounter) {
+                cartCounter.textContent = totalItems;
+                cartCounter.style.display = totalItems > 0 ? 'inline-block' : 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Failed to update cart counter:', error);
+    }
+}
+        function renderProduct(product) {
+            // Remplir les informations du produit
+            document.getElementById('product-name').textContent = product.SKU;
+            document.getElementById('product-image').src = product.img_path;
+            document.getElementById('product-image').alt = product.SKU;
+            document.getElementById('product-description').textContent = product.description;
+            document.getElementById('product-sku').textContent = product.SKU;
+            
+            // Gestion du prix et des promotions
+            if (product.promo && product.promo > 0) {
+                const discountPrice = (product.price * (100 - product.promo) / 100).toFixed(2);
+                document.getElementById('current-price').textContent = `$${discountPrice}`;
+                document.getElementById('original-price').textContent = `$${product.price.toFixed(2)}`;
+                document.getElementById('discount-badge').textContent = `${product.promo}% OFF`;
+            } else {
+                document.getElementById('current-price').textContent = `$${product.price.toFixed(2)}`;
+                document.getElementById('original-price').style.display = 'none';
+                document.getElementById('discount-badge').style.display = 'none';
+            }
+            
+            // Gestion du stock
+            const stockStatus = document.getElementById('stock-status');
+            const availability = document.getElementById('availability');
+            if (product.stock > 10) {
+                stockStatus.innerHTML = '<span class="text-success">In Stock</span>';
+                availability.textContent = 'In Stock';
+            } else if (product.stock > 0) {
+                stockStatus.innerHTML = `<span class="text-warning">Only ${product.stock} left</span>`;
+                availability.textContent = `Only ${product.stock} left`;
+            } else {
+                stockStatus.innerHTML = '<span class="text-danger">Out of Stock</span>';
+                availability.textContent = 'Out of Stock';
+                document.querySelector('.add-to-cart').disabled = true;
+            }
+            
+            // Afficher la section produit
+            document.getElementById('product-details').style.display = 'block';
+        }
+        
+        function showError() {
+            document.getElementById('error-message').style.display = 'block';
+        }
+        document.getElementById("addToCart").addEventListener("click",addCart);
+        async function addCart() {
+    // First get the token from localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Please log in to add items to your cart.");
+        return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+    const quantity = parseInt(document.querySelector(".quantity-selector input").value);
+    const color = document.getElementById("selected-color").value;
+    const size = document.getElementById("selected-size").value;
+
+    // Get current price (without the dollar sign)
+    const currentPriceText = document.getElementById("current-price").textContent.replace("$", "");
+    const uniPrice = parseFloat(currentPriceText);
+
+    if (!productId || !quantity || !color || !size || isNaN(uniPrice)) {
+        alert("Please fill in all required product options.");
+        return;
+    }
+
+    const cartItem = {
+        product_id: productId,
+        quantity: quantity,
+        color: color,
+        size: size,
+        uniPrice: uniPrice
+    };
+    
+    try {
+        const response = await fetch("http://localhost:5000/addToCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Standard format for JWT
+            },
+            body: JSON.stringify(cartItem)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "An error occurred while adding to cart.");
+        }
+
+        // Show success message
+        showCartNotification(result.cartItem.name, result.cartItem.quantity);
+        updateCartCounter();
+
+    } catch (error) {
+        console.error("Add to cart failed:", error);
+        alert(error.message || "Failed to add product to cart.");
+    }
+}
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/FRONTEND/src/pages/userPages/homePage/js/loginLogic.js"></script>
+</body>
+</html>

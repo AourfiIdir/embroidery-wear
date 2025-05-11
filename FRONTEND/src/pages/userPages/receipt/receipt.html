@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reçu de Commande</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --accent: #4895ef;
+      --dark: #212529;
+      --light: #f8f9fa;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 2rem;
+    }
+
+    .receipt-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .receipt-header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .receipt-header::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .receipt-header::after {
+      content: "";
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .receipt-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .receipt-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 2;
+    }
+
+    .receipt-number {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      margin-top: 1rem;
+      font-weight: 600;
+      position: relative;
+      z-index: 2;
+    }
+
+    .receipt-body {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title i {
+      margin-right: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .info-card {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-label {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .items-table thead {
+      background: var(--light);
+    }
+
+    .items-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .items-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .items-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .product-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 1rem;
+      background: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #adb5bd;
+      font-size: 0.75rem;
+    }
+
+    .product-name {
+      font-weight: 500;
+    }
+
+    .product-variants {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: 0.25rem;
+    }
+
+    .total-section {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .total-label {
+      color: #6c757d;
+    }
+
+    .total-value {
+      font-weight: 500;
+    }
+
+    .grand-total {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+
+    .receipt-footer {
+      text-align: center;
+      padding: 2rem;
+      background: var(--light);
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .thank-you {
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .print-btn {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 1.5rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .print-btn:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .receipt-container {
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .print-btn {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      .items-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+  <div class="receipt-container" id="receipt-container">
+    <!-- Content will be dynamically populated by JavaScript -->
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Veuillez vous connecter pour voir vos reçus');
+        }
+
+        // Fetch order data from backend
+        const response = await fetch('http://localhost:5000/getOrders', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des commandes');
+        }
+
+        const data = await response.json();
+        
+        if (!data.orders || data.orders.length === 0) {
+          throw new Error('Aucune commande trouvée');
+        }
+
+        // Display the most recent order (first in array)
+        const order = data.orders[0];
+        const customer = data.customer;
+        
+        // Format dates
+        const formatDate = (dateString) => {
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return new Date(dateString).toLocaleDateString('fr-FR', options);
+        };
+
+        // Calculate totals
+        const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const tax = subtotal * 0.1; // Example tax calculation (10%)
+        const total = subtotal + tax;
+
+        // Generate HTML for the receipt
+        const receiptHTML = `
+          <div class="receipt-header">
+            <h1 class="receipt-title">Reçu de Commande</h1>
+            <p class="receipt-subtitle">Votre commande a été confirmée</p>
+            <div class="receipt-number">Commande #${order.order_id}</div>
+          </div>
+
+          <div class="receipt-body">
+            <div class="section">
+              <h2 class="section-title"><i class='bx bx-user'></i> Informations Client</h2>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-label">Nom Complet</div>
+                  <div class="info-value">${customer.first_name} ${customer.last_name}</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-label">Email</div>
+                  <div class="info-value">${customer.email}</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-label">Date de Commande</div>
+                  <div class="info-value">${formatDate(order.order_date)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2 class="section-title"><i class='bx bx-map'></i> Adresse de Livraison</h2>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-label">Adresse</div>
+                  <div class="info-value">${customer.shipping_address}</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-label">Ville</div>
+                  <div class="info-value">${customer.shipping_city}</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-label">État/Code Postal</div>
+                  <div class="info-value">${customer.shipping_state}, ${customer.shipping_zip_code}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2 class="section-title"><i class='bx bx-package'></i> Articles Commandés</h2>
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Produit</th>
+                    <th>Prix Unitaire</th>
+                    <th>Quantité</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${order.items.map(item => `
+                    <tr>
+                      <td>
+                        <div class="product-info">
+                          
+                          <div>
+                            <div class="product-name">${item.SKU}</div>
+                            <div class="product-variants">${item.size}, ${item.color}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>$${item.price.toFixed(2)}</td>
+                      <td>${item.quantity}</td>
+                      <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="total-section">
+              <div class="total-row">
+                <span class="total-label">Sous-total</span>
+                <span class="total-value">$${subtotal.toFixed(2)}</span>
+              </div>
+              <div class="total-row">
+                <span class="total-label">Livraison</span>
+                <span class="total-value">Gratuite</span>
+              </div>
+              <div class="total-row">
+                <span class="total-label">Taxes</span>
+                <span class="total-value">$${tax.toFixed(2)}</span>
+              </div>
+              <div class="total-row grand-total">
+                <span>Total</span>
+                <span>$${total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2 class="section-title"><i class='bx bx-credit-card'></i> Paiement</h2>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-label">Méthode de Paiement</div>
+                  <div class="info-value">${order.payment_method}</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-label">Statut</div>
+                  <div class="info-value" style="color: ${order.payment_status === 'Payé' ? 'var(--success)' : 'var(--danger)'}">${order.payment_status}</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-label">Date de Paiement</div>
+                  <div class="info-value">${formatDate(order.payment_date || order.order_date)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="receipt-footer">
+            <div class="thank-you">Merci pour votre commande !</div>
+            <p>Votre commande sera traitée dans les plus brefs délais.</p>
+            <p>Pour toute question, contactez notre service client.</p>
+            <button onclick="window.print()" class="print-btn">
+              <i class='bx bx-printer'></i> Imprimer le Reçu
+            </button>
+          </div>
+        `;
+
+        // Insert the generated HTML into the container
+        document.getElementById('receipt-container').innerHTML = receiptHTML;
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('receipt-container').innerHTML = `
+          <div class="receipt-header">
+            <h1 class="receipt-title">Reçu de Commande</h1>
+          </div>
+          <div class="receipt-body">
+            <div class="section" style="text-align: center; padding: 2rem;">
+              <h2 style="color: var(--danger);">Erreur</h2>
+              <p>${error.message}</p>
+              <a href="/" style="display: inline-block; margin-top: 1rem; color: var(--primary);">Retour à l'accueil</a>
+            </div>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

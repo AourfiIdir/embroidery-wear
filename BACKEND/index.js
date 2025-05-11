@@ -606,56 +606,62 @@ function dbAll(sql, params = []) {
   });
 }
 
-// GET order details by ID
-app.get("/getOrder/:orderId", async (req, res) => {
+// GET all orders for a customer
+app.get("/getOrders", Userauth, Roleauth(ROLE.USER), async (req, res) => {
   try {
-    const orderId = req.params.orderId;
+    const clientId = req.user.id;
 
-    // 1. Get order info
-    const orderRows = await dbAll(
-      `SELECT * FROM \`Order\` WHERE order_id = ?`,
-      [orderId]
+    // 1. Get all orders for this customer
+    const orders = await dbAll(
+      `SELECT * FROM \`Order\` 
+       WHERE Customer_customer = ? 
+       ORDER BY order_date DESC`,
+      [clientId]
     );
 
-    if (!orderRows || orderRows.length === 0) {
-      return res.status(404).json({ error: "Order not found" });
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ error: "No orders found" });
     }
 
-    const order = orderRows[0];
+    // 2. Get customer info (once since it's the same for all orders)
+    const [customer] = await dbAll(
+      `SELECT first_name, last_name, email, shipping_address, shipping_city, shipping_state, shipping_zip_code 
+       FROM Customer WHERE customer_id = ?`,
+      [clientId]
+    );
 
-    // 2. Run all parallel queries
-    const [items, customer] = await Promise.all([
-      // Items in the order
-      dbAll(
-        `SELECT quantity, color, size, name, price FROM Order_item WHERE Order_order_id = ?`,
-        [orderId]
-      ),
+    // 3. Get order items for each order
+    const ordersWithItems = await Promise.all(
+      orders.map(async (order) => {
+        const items = await dbAll(
+          `SELECT oi.*, p.SKU, p.description, p.img_path
+           FROM Order_item oi
+           JOIN Product p ON oi.product_id = p.product_id
+           WHERE oi.Order_order_id = ?`,
+          [order.order_id]
+        );
+        
+        return {
+          ...order,
+          items: items || []
+        };
+      })
+    );
 
-      // Customer who placed the order
-      dbAll(
-        `SELECT first_name, last_name, email, shipping_address, shipping_city, shipping_state, shipping_zip_code 
-         FROM Customer WHERE customer_id = ?`,
-        [order.Customer_customer]
-      )
-    ]);
-
-    // 3. Format response
+    // 4. Format response
     res.json({
-      order,
-      items,
-      customer: customer[0] || null,
-      // shipment: Not available since shipment info is not yet created or linked in the DB schema
+      orders: ordersWithItems,
+      customer: customer || null
     });
 
   } catch (err) {
-    console.error("Error in /getOrder:", err);
+    console.error("Error in /getOrders:", err);
     res.status(500).json({
       error: "Internal Server Error",
       details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
-
 
 
 

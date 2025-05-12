@@ -20,11 +20,11 @@
             </li>
           </ul>
         </div>
-    
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        
+
         <!-- Menu de navigation -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto">
@@ -32,7 +32,7 @@
               <a class="nav-link" href="index.html" style="color: coral">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/FRONTEND/src/pages/userPages/shopPage/shirt/shirt1.html">Shop</a>
+              <a class="nav-link" href="../shopPage/sepecialOffer/specialOffer1.html">Shop</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">Blog</a>
@@ -43,34 +43,20 @@
             <li class="nav-item">
               <a class="nav-link" href="#foter">Contact Us</a>
             </li>
-            
             <!-- Icônes séparées -->
-           
-            <a class="nav-link" href="/FRONTEND/src/pages/adminPages/add.html" id="admin-add-icon">
-              <i class='bx bx-plus add' style="color: coral; visibility: hidden; opacity:0;"></i>
-            </a>
-            <a class="nav-link" href="/FRONTEND/src/pages/adminPages/rmvProd.html" id="admin-remove-icon">
-              <i class='bx bx-minus add' style="color: coral; visibility: hidden; opacity:0;"></i>
-            </a>
             <li class="nav-item d-flex align-items-center gap-2" id="humicon">
-              <i class="bx bx-search-alt nav-link SearchIcon1 search-btn" id="SearchIcon2"></i>
-              <i class="bx bx-x SearchIcon1 close-btn" id="closeIcon1" style="font-size: 1.8rem"></i>
-              <a class="nav-link" href="/FRONTEND/src/pages/userPages/cart/detailsP.html"><i class="bx bx-shopping-bag"></i></a>
-              <a class="nav-link" href="/FRONTEND/src/pages/userPages/receipt/receipt.html">
-                <i class="bx bx-receipt"></i>
-              </a>
-              <!-- Dynamic User/Login/Logout Section -->
-              <div id="auth-section">
-                <!-- This will be populated by JavaScript based on login status -->
-              </div>
+             <i class="bx bx-search-alt nav-link SearchIcon1 search-btn" id="SearchIcon2"></i>
+             <i class="bx bx-x SearchIcon1 close-btn" id="closeIcon1" style="font-size: 1.8rem"></i>
+              <a class="nav-link" href="../cart/detailsP.html"><i class="bx bx-shopping-bag"></i></a>
+              <a class="nav-link" href="../AccountPage/index.html"><i class="bx bx-user"></i></a>
             </li>
           </ul>
         </div>
-        <div class="search-container">
-          <input type="text" placeholder="Search here ..." name="" id="search-input2">
-          <div id="autocomplete-results"></div>
-          <div id="search-results"></div>
-        </div>
+         <div class="search-container">
+           <input type="text" placeholder="Search here ..." name="" id="search-input2">
+           <div id="autocomplete-results"></div>
+           <div id="search-results"></div>
+         </div>
       </div>
     </nav>
 
@@ -356,6 +342,180 @@
             </div>
         </div>
     </section>
+    <body>
+    <div class="container">
+        <header>
+            <h1>Customer Feedback</h1>
+            <p class="subtitle">Hear what our customers say about us</p>
+        </header>
+        
+        <div class="feedback-grid">
+            <!-- Row 1 -->
+            <!-- Card 1 - Left -->
+            <div class="feedback-card left">
+                <div class="customer-info">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson" class="customer-avatar">
+                    <div class="customer-details">
+                        <h3 class="customer-name">Sarah Johnson</h3>
+                        <div class="customer-location">
+                            <span class="location-icon">📍</span>
+                            <span>New York, USA</span>
+                        </div>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-content">
+                    <p>"I absolutely love the quality of the products I received! The shipping was faster than expected and the customer service was exceptional when I had a question about sizing. Will definitely be shopping here again!"</p>
+                </div>
+                <div class="feedback-date">
+                    Posted on March 15, 2023
+                </div>
+            </div>
+            
+            <!-- Card 2 - Right -->
+            <div class="feedback-card right">
+                <div class="customer-info">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Chen" class="customer-avatar">
+                    <div class="customer-details">
+                        <h3 class="customer-name">Michael Chen</h3>
+                        <div class="customer-location">
+                            <span class="location-icon">📍</span>
+                            <span>Toronto, Canada</span>
+                        </div>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-content">
+                    <p>"The product exceeded my expectations. The attention to detail is remarkable, and it's clear that quality is a priority for this company. The only minor issue was the packaging could be more eco-friendly, but otherwise perfect!"</p>
+                </div>
+                <div class="feedback-date">
+                    Posted on February 28, 2023
+                </div>
+            </div>
+            
+            <!-- Row 2 -->
+            <!-- Card 3 - Left -->
+            <div class="feedback-card left">
+                <div class="customer-info">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emma Rodriguez" class="customer-avatar">
+                    <div class="customer-details">
+                        <h3 class="customer-name">Emma Rodriguez</h3>
+                        <div class="customer-location">
+                            <span class="location-icon">📍</span>
+                            <span>London, UK</span>
+                        </div>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-content">
+                    <p>"Great products overall, though one item arrived with minor damage. The customer service team was very responsive and sent a replacement immediately."</p>
+                </div>
+                <div class="feedback-date">
+                    Posted on January 10, 2023
+                </div>
+            </div>
+            
+            <!-- Card 4 - Right -->
+            <div class="feedback-card right">
+                <div class="customer-info">
+                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="David Kim" class="customer-avatar">
+                    <div class="customer-details">
+                        <h3 class="customer-name">David Kim</h3>
+                        <div class="customer-location">
+                            <span class="location-icon">📍</span>
+                            <span>Seoul, South Korea</span>
+                        </div>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-content">
+                    <p>"I'm extremely impressed with the quality and the reasonable pricing. The items arrived well-packaged and exactly as described. The website is easy to navigate."</p>
+                </div>
+                <div class="feedback-date">
+                    Posted on December 5, 2022
+                </div>
+            </div>
+            
+            <!-- Row 3 -->
+            <!-- Card 5 - Left -->
+            <div class="feedback-card left">
+                <div class="customer-info">
+                    <img src="https://randomuser.me/api/portraits/women/25.jpg" alt="Priya Patel" class="customer-avatar">
+                    <div class="customer-details">
+                        <h3 class="customer-name">Priya Patel</h3>
+                        <div class="customer-location">
+                            <span class="location-icon">📍</span>
+                            <span>Mumbai, India</span>
+                        </div>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-content">
+                    <p>"Good products at competitive prices. The shipping took a bit longer than estimated but customer support kept me updated throughout the process."</p>
+                </div>
+                <div class="feedback-date">
+                    Posted on November 20, 2022
+                </div>
+            </div>
+            
+            <!-- Card 6 - Right -->
+            <div class="feedback-card right">
+                <div class="customer-info">
+                    <img src="https://randomuser.me/api/portraits/women/63.jpg" alt="Lisa Wong" class="customer-avatar">
+                    <div class="customer-details">
+                        <h3 class="customer-name">Lisa Wong</h3>
+                        <div class="customer-location">
+                            <span class="location-icon">📍</span>
+                            <span>Singapore</span>
+                        </div>
+                        <div class="rating">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-content">
+                    <p>"Excellent customer service and fast delivery. The products are high quality and exactly as pictured. Will definitely purchase from this store again!"</p>
+                </div>
+                <div class="feedback-date">
+                    Posted on October 12, 2022
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="mt-5 py-5" id="foter">
       <div class="row container mx-auto">
@@ -430,10 +590,10 @@
     </footer>
 
 
-    
+
     <script type="text/javascript" src="js/scripte.js"></script>
     <script type="text/javascript" src="js/search.js"></script>
-    <script src="/FRONTEND/src/pages/userPages/homePage/js/loginLogic.js"></script>
+    <script type="text/javascript" src="js/feedback.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
 

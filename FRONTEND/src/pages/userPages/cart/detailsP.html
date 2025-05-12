@@ -455,7 +455,7 @@
 
     if (!confirmResult.isConfirmed) return;
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")|| prompt("enter the token");
     if (!token) {
         return Swal.fire({
             icon: 'error',

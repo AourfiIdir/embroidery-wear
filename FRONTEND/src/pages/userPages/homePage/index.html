@@ -6,6 +6,149 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
+  <style>
+        
+        /* Navbar Styles (preserving your original) */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.2s ease;
+        }
+        
+        /* Search Specific Styles */
+        .search-container {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 120px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        
+        .search-container.active {
+            top: 0;
+            opacity: 1;
+        }
+        
+        .search-box {
+            width: 80%;
+            max-width: 700px;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.1s;
+        }
+        
+        .search-container.active .search-box {
+            transform: translateY(0);
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #searchInput:focus {
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+        
+        #autocomplete-results, #search-results {
+            position: absolute;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .search-container.active #autocomplete-results,
+        .search-container.active #search-results {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .autocomplete-item, .result-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+        
+        .autocomplete-item:hover, .result-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .result-item h5 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .result-item p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .close-search {
+            position: absolute;
+            right: 10%;
+            top: 140px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .close-search:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+        
+        /* Animation for individual results */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-item {
+            animation: fadeInUp 0.3s ease forwards;
+            animation-delay: calc(var(--i) * 0.05s);
+        }
+    
+    </style>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 fixed-top">
       <div class="container">
@@ -67,12 +210,23 @@
           </ul>
         </div>
         <div class="search-container">
-          <input type="text" placeholder="Search here ..." name="" id="search-input2">
-          <div id="autocomplete-results"></div>
-          <div id="search-results"></div>
-        </div>
+    <input type="text" placeholder="Search here ..." name="" id="search-input2">
+    <div id="autocomplete-results"></div>
+    <div id="search-results"></div>
+</div>
       </div>
     </nav>
+    <!-- Search Overlay -->
+    <div class="search-container" id="searchContainer">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search products...">
+            <div id="autocomplete-results"></div>
+            <div id="search-results"></div>
+        </div>
+        <button class="close-search" id="closeSearch">
+            <i class="bx bx-x"></i>
+        </button>
+    </div>
 
     <section id="home">
       <div class="container text-center mt-5">
@@ -430,7 +584,158 @@
     </footer>
 
 
-    
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchToggle = document.getElementById('SearchIcon2');
+    const closeSearch = document.getElementById('closeIcon1');
+    const searchContainer = document.querySelector('.search-container');
+    const searchInput = document.getElementById('search-input2');
+    const autocompleteResults = document.getElementById('autocomplete-results');
+    const searchResults = document.getElementById('search-results');
+
+    // Toggle search visibility
+    const toggleSearch = (show) => {
+        if (show) {
+            searchContainer.style.display = 'block';
+            searchInput.focus();
+            searchToggle.style.display = 'none';
+            closeSearch.style.display = 'block';
+        } else {
+            searchContainer.style.display = 'none';
+            searchInput.value = '';
+            autocompleteResults.style.display = 'none';
+            searchResults.style.display = 'none';
+            searchToggle.style.display = 'block';
+            closeSearch.style.display = 'none';
+        }
+    };
+
+    // Initialize
+    closeSearch.style.display = 'none';
+    searchContainer.style.display = 'none';
+
+    // Event listeners
+    searchToggle.addEventListener('click', () => toggleSearch(true));
+    closeSearch.addEventListener('click', () => toggleSearch(false));
+
+    // Debounce function
+    function debounce(func, delay) {
+        let timeout;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
+    }
+
+    // Fetch autocomplete suggestions
+    const fetchSuggestions = debounce(async (term) => {
+        if (term.length < 2) {
+            autocompleteResults.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/search?item=${encodeURIComponent(term)}`);
+            const suggestions = await response.json();
+            
+            if (suggestions.length > 0) {
+                autocompleteResults.innerHTML = suggestions.map(item => `
+                    <div class="autocomplete-item" data-sku="${item.SKU}">
+                        ${item.SKU} - ${item.name || item.description.substring(0, 50)}...
+                    </div>
+                `).join('');
+                autocompleteResults.style.display = 'block';
+            } else {
+                autocompleteResults.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+            autocompleteResults.style.display = 'none';
+        }
+    }, 300);
+
+    // Perform full search
+    const performSearch = debounce(async (term) => {
+        if (term.length < 2) {
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/search/full?term=${encodeURIComponent(term)}`);
+            const results = await response.json();
+            
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(item => `
+                    <div class="result-item" data-sku="${item.SKU}">
+                        <h5>${item.SKU}</h5>
+                        <p>${item.description}</p>
+                    </div>
+                `).join('');
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.innerHTML = '<div class="p-2 text-center">No results found</div>';
+                searchResults.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error performing search:', error);
+            searchResults.innerHTML = '<div class="p-2 text-center">Error loading results</div>';
+            searchResults.style.display = 'block';
+        }
+    }, 500);
+
+    // Event listeners
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.trim();
+        fetchSuggestions(term);
+        performSearch(term);
+    });
+
+    // Handle selection from autocomplete
+    autocompleteResults.addEventListener('click', (e) => {
+        if (e.target.classList.contains('autocomplete-item')) {
+            searchInput.value = e.target.textContent.trim();
+            autocompleteResults.style.display = 'none';
+            performSearch(searchInput.value);
+        }
+    });
+
+    // Handle selection from search results
+    searchResults.addEventListener('click', async (e) => {
+        const item = e.target.closest('.result-item');
+        if (item) {
+            const sku = item.dataset.sku;
+            try {
+                const response = await fetch(`http://localhost:5000/getProductId?sku=${encodeURIComponent(sku)}`);
+                const data = await response.json();
+                window.location.href = `/FRONTEND/src/pages/userPages/shopPage/product.html?id=${data.productId || sku}`;
+            } catch (error) {
+                console.error('Error:', error);
+                window.location.href = `/FRONTEND/src/pages/userPages/shopPage/product.html?sku=${encodeURIComponent(sku)}`;
+            }
+        }
+    });
+
+    // Handle Enter key
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            autocompleteResults.style.display = 'none';
+            performSearch(searchInput.value.trim());
+        }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target) && e.target !== searchToggle) {
+            toggleSearch(false);
+        }
+    });
+});
+</script>
     <script type="text/javascript" src="js/scripte.js"></script>
     <script type="text/javascript" src="js/search.js"></script>
     <script src="/FRONTEND/src/pages/userPages/homePage/js/loginLogic.js"></script>

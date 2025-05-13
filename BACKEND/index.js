@@ -679,7 +679,7 @@ app.get("/promo", (req, res) => {
 app.get("/search", (req, res) => {
   let items = req.query.item;
   console.log(items);
-  db.all(`SELECT SKU FROM Product WHERE description LIKE ? OR SKU LIKE  ? LIMIT 5`, [`%${items}%`, `%${items}%`], (err, rows) => {
+  db.all(`SELECT SKU AND product_id FROM Product WHERE description LIKE ? OR SKU LIKE  ? LIMIT 5`, [`%${items}%`, `%${items}%`], (err, rows) => {
     if (err) {
       res.status(401).json({ error: err });
     }
@@ -702,7 +702,80 @@ app.get('/search/full', (req, res) => {
   );
 });
 
+app.get("/getProductId", async (req, res) => {
+    const sku = req.query.sku;
+    console.log('Received request for SKU:', sku); // Debug log
 
+    if (!sku) {
+        console.warn('Missing SKU parameter');
+        return res.status(400).json({
+            success: false,
+            message: "SKU parameter is required",
+            productId: null,
+            receivedSku: sku
+        });
+    }
+
+    try {
+        // First verify the SKU exists
+        const skuCheck = await new Promise((resolve, reject) => {
+            db.get(`SELECT COUNT(*) as count FROM Product WHERE SKU = ?`, [sku], (err, row) => {
+                if (err) reject(err);
+                resolve(row);
+            });
+        });
+
+        console.log('SKU existence check:', skuCheck); // Debug log
+
+        if (!skuCheck || skuCheck.count === 0) {
+            console.warn('SKU not found in database:', sku);
+            return res.status(404).json({
+                success: false,
+                message: "SKU not found in database",
+                productId: null,
+                receivedSku: sku
+            });
+        }
+
+        // Now get the product_id
+        const product = await new Promise((resolve, reject) => {
+            db.get(`SELECT product_id FROM Product WHERE SKU = ?`, [sku], (err, row) => {
+                if (err) reject(err);
+                resolve(row);
+            });
+        });
+
+        console.log('Product lookup result:', product); // Debug log
+
+        if (!product || !product.product_id) {
+            console.error('Database returned null product_id for SKU:', sku);
+            return res.status(500).json({
+                success: false,
+                message: "Database returned null product_id",
+                productId: null,
+                receivedSku: sku
+            });
+        }
+
+        console.log('Successfully found product_id:', product.product_id); // Debug log
+        res.status(200).json({
+            success: true,
+            message: "Product found",
+            productId: product.product_id,
+            receivedSku: sku
+        });
+
+    } catch (err) {
+        console.error('Database error:', err.message);
+        res.status(500).json({
+            success: false,
+            message: "Database error",
+            productId: null,
+            receivedSku: sku,
+            error: err.message
+        });
+    }
+});
 
 
 
@@ -726,44 +799,137 @@ app.get("/isAdmin", Userauth, (req, res) => {
   });
 });
 
-// Admin endpoint - permission required
-app.post('/addProduct', Userauth, Roleauth(ROLE.ADMIN), (req, res) => {
-  const { productName, description, price, quantity, promo, image_path, categoryName } = req.body;
+app.post('/addProductWithUrl', Userauth, Roleauth(ROLE.ADMIN), async (req, res) => {
+    try {
+        const { productName, description, price, quantity, promo, categoryName, imageUrl } = req.body;
 
-  // Validate all required fields
-  if (!productName || !description || !price || !quantity || !promo || !image_path || !categoryName) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+        // Validate all required fields
+        const requiredFields = {
+            productName: "Product name is required",
+            description: "Description is required",
+            price: "Price is required",
+            quantity: "Quantity is required",
+            categoryName: "Category is required",
+            imageUrl: "Image URL is required"
+        };
 
-  // Start transaction
-  db.serialize(() => {
-    db.get(`SELECT category_id FROM Category WHERE name = ?`, [categoryName], (err, category) => {
-      if (err) {
-        return res.status(500).json({ error: "Database error", details: err.message });
-      }
-
-      if (!category) {
-        return res.status(404).json({ error: "Category not found" });
-      }
-
-      db.run(
-        `INSERT INTO Product (SKU, description, price, stock, promo, img_path, Category_category) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [productName, description, price, quantity, promo, image_path, category.category_id],
-        function(err) {
-          if (err) {
-            return res.status(500).json({ error: "Failed to add product", details: err.message });
-          }
-
-          res.status(201).json({
-            success: true,
-            message: "Product added successfully",
-            productId: this.lastID
-          });
+        for (const [field, message] of Object.entries(requiredFields)) {
+            if (!req.body[field]) {
+                return res.status(400).json({ 
+                    success: false,
+                    error: message 
+                });
+            }
         }
-      );
-    });
-  });
+
+        // Validate numeric fields
+        if (isNaN(price) || price <= 0) {
+            return res.status(400).json({ 
+                success: false,
+                error: "Price must be a positive number" 
+            });
+        }
+
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+            return res.status(400).json({ 
+                success: false,
+                error: "Quantity must be a positive integer" 
+            });
+        }
+
+        if (isNaN(promo) || promo < 0 || promo > 100) {
+            return res.status(400).json({ 
+                success: false,
+                error: "Promo must be between 0 and 100" 
+            });
+        }
+
+        // Validate URL
+        try {
+            new URL(imageUrl);
+        } catch (err) {
+            return res.status(400).json({ 
+                success: false,
+                error: "Invalid image URL format" 
+            });
+        }
+
+        // Get category ID
+        db.get(`SELECT category_id FROM Category WHERE name = ?`, 
+        [categoryName], (err, category) => {
+            if (err) {
+                console.error("Database error:", err);
+                return res.status(500).json({ 
+                    success: false,
+                    error: "Database error",
+                    details: err.message 
+                });
+            }
+
+            if (!category) {
+                return res.status(404).json({ 
+                    success: false,
+                    error: `Category "${categoryName}" not found` 
+                });
+            }
+
+            // Insert product
+            db.run(
+                `INSERT INTO Product 
+                (SKU, description, price, stock, promo, img_path, Category_category) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    productName, 
+                    description, 
+                    price, 
+                    quantity, 
+                    promo, 
+                    imageUrl, 
+                    category.category_id
+                ],
+                function(err) {
+                    if (err) {
+                        console.error("Insert error:", err);
+                        
+                        // Handle specific SQL errors
+                        let errorMessage = "Failed to add product";
+                        if (err.code === "SQLITE_CONSTRAINT") {
+                            if (err.message.includes("SKU")) {
+                                errorMessage = "Product name already exists";
+                            } else if (err.message.includes("Category_category")) {
+                                errorMessage = "Invalid category";
+                            }
+                        }
+                        
+                        return res.status(500).json({ 
+                            success: false,
+                            error: errorMessage,
+                            details: err.message 
+                        });
+                    }
+
+                    // Success response
+                    res.status(201).json({
+                        success: true,
+                        message: "Product added successfully",
+                        productId: this.lastID,
+                        product: {
+                            name: productName,
+                            price: price,
+                            imageUrl: imageUrl
+                        }
+                    });
+                }
+            );
+        });
+    } catch (error) {
+        console.error("Unexpected error:", error);
+        res.status(500).json({ 
+            success: false,
+            error: "Internal server error",
+            details: error.message 
+        });
+    }
 });
 
 app.delete('/deleteProduct', Userauth, Roleauth(ROLE.ADMIN), (req, res) => {

@@ -76,7 +76,6 @@ const stateCityMap = {
   "57": ["In Salah", "Foggaret Ezzoua", "Ain Salah", "Tidikelt", "Hassi Lahdjar", "El Ménia", "Tamanrasset", "Arak", "Tazrouk", "Idles"],
   "58": ["In Guezzam", "Tin Zaouatine", "Tamanrasset", "Idles", "Ain Guezzam", "Tazrouk", "Abalessa", "In Amguel", "Serouenout", "Outoul"],
     };
-
 // Next button click handler
 nextBtn.addEventListener('click', (event) => {
   event.preventDefault();
@@ -247,4 +246,3 @@ window.addEventListener("DOMContentLoaded", function() {
     citySelect.selectedIndex = 0;
   }
 });
-

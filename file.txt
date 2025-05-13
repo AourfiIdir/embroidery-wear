@@ -1,0 +1,229 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Imagine Wear</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+  </head>
+  <style>
+        
+        /* Navbar Styles (preserving your original) */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.2s ease;
+        }
+        
+        /* Search Specific Styles */
+        .search-container {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 120px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        
+        .search-container.active {
+            top: 0;
+            opacity: 1;
+        }
+        
+        .search-box {
+            width: 80%;
+            max-width: 700px;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.1s;
+        }
+        
+        .search-container.active .search-box {
+            transform: translateY(0);
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #searchInput:focus {
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+        
+        #autocomplete-results, #search-results {
+            position: absolute;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .search-container.active #autocomplete-results,
+        .search-container.active #search-results {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .autocomplete-item, .result-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+        
+        .autocomplete-item:hover, .result-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .result-item h5 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .result-item p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .close-search {
+            position: absolute;
+            right: 10%;
+            top: 140px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .close-search:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+        
+        /* Animation for individual results */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-item {
+            animation: fadeInUp 0.3s ease forwards;
+            animation-delay: calc(var(--i) * 0.05s);
+        }
+    
+    </style>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 fixed-top">
+      <div class="container">
+        <a href="#"><img src="../media/logo/logo.jpg" alt="logo" class="img-fluid ms-4" style="width: 60px;height: auto; border-radius: 20px"></a>
+        
+        <!-- Bouton hamburger -->
+        <div class="icon-wrapper">
+          <ul>
+            <li class="nav-item d-flex align-items-center " id="humicon">
+              <i class="bx bx-search-alt nav-link search-btn3" id="SearchIcon3"></i>
+              <i class="bx bx-x .icon-wrapper3 close-btn3" style="font-size: 1.8rem"></i>
+            </li>
+          </ul>
+        </div>
+    
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Menu de navigation -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html" style="color: coral">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/FRONTEND/src/pages/userPages/shopPage/shirt/shirt1.html">Shop</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#foter">Contact Us</a>
+            </li>
+            
+            <!-- Icônes séparées -->
+           
+            <a class="nav-link" href="/FRONTEND/src/pages/adminPages/add.html" id="admin-add-icon">
+              <i class='bx bx-plus add' style="color: coral; visibility: hidden; opacity:0;"></i>
+            </a>
+            <a class="nav-link" href="/FRONTEND/src/pages/adminPages/rmvProd.html" id="admin-remove-icon">
+              <i class='bx bx-minus add' style="color: coral; visibility: hidden; opacity:0;"></i>
+            </a>
+            <li class="nav-item d-flex align-items-center gap-2" id="humicon">
+              <i class="bx bx-search-alt nav-link SearchIcon1 search-btn" id="SearchIcon2"></i>
+              <i class="bx bx-x SearchIcon1 close-btn" id="closeIcon1" style="font-size: 1.8rem"></i>
+              <a class="nav-link" href="/FRONTEND/src/pages/userPages/cart/detailsP.html"><i class="bx bx-shopping-bag"></i></a>
+              <a class="nav-link" href="/FRONTEND/src/pages/userPages/receipt/receipt.html">
+                <i class="bx bx-receipt"></i>
+              </a>
+              <!-- Dynamic User/Login/Logout Section -->
+              <div id="auth-section">
+                <!-- This will be populated by JavaScript based on login status -->
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="search-container">
+    <input type="text" placeholder="Search here ..." name="" id="search-input2">
+    <div id="autocomplete-results"></div>
+    <div id="search-results"></div>
+</div>
+      </div>
+    </nav>
+    <!-- Search Overlay -->
+    <div class="search-container" id="searchContainer">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search products...">
+            <div id="autocomplete-results"></div>
+            <div id="search-results"></div>
+        </div>
+        <button class="close-search" id="closeSearch">
+            <i class="bx bx-x"></i>
+        </button>
+    </div>

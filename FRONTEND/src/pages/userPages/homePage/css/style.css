@@ -455,6 +455,143 @@ scale:1;
 #banner .container button{
 	background-color: coral;
 }
+   .subtitle {
+            color: var(--light-text);
+            font-size: 1rem;
+        }
+        
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .feedback-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            height: 100%;
+        }
+        
+        /* Left entering cards */
+        .feedback-card.left {
+            transform: translateX(-100px);
+        }
+        
+        /* Right entering cards */
+        .feedback-card.right {
+            transform: translateX(100px);
+        }
+        
+        .feedback-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .customer-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .customer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .customer-details {
+            flex: 1;
+        }
+        
+        .customer-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .customer-location {
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .location-icon {
+            margin-right: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .rating {
+            display: flex;
+            margin-top: 3px;
+        }
+        
+        .star {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+        
+		.feedback-grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr); /* Two cards per line */
+			gap: 20px;
+		}
+
+		.feedback-content {
+			padding: 10px 0;
+			font-size: 0.95rem;
+			line-height: 1.6;
+			flex-grow: 1;
+		}
+        
+        .feedback-date {
+            color: var(--light-text);
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 900px) {
+            .feedback-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .feedback-card {
+                padding: 15px;
+            }
+            
+            .customer-avatar {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .customer-name {
+                font-size: 1rem;
+            }
+            
+            .feedback-content {
+                font-size: 0.9rem;
+            }
+        }
 
 footer{
 	background-color: #222222;

@@ -107,46 +107,48 @@
     </form>
 
     <script>
-        document.getElementById('addProductForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+       document.getElementById('addProductForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-            // Get token from secure storage (not hardcoded)
-            const token = localStorage.getItem('authToken') || prompt("Please enter your auth token");
-            if (!token) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login.html';
+        return;
+    }
 
-            const productData = {
-                productName: document.getElementById('productName').value,
-                price: parseFloat(document.getElementById('productPrice').value),
-                description: document.getElementById('productDescription').value,
-                categoryName: document.getElementById('productCategory').value,
-                image_path: document.getElementById('productImgPath').value,
-                promo: parseInt(document.getElementById('productPromo').value),
-                quantity: parseInt(document.getElementById('quantity').value)
-            };
+    const productData = {
+        productName: document.getElementById('productName').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        description: document.getElementById('productDescription').value,
+        categoryName: document.getElementById('productCategory').value,
+        img_path: document.getElementById('productImgPath').value,
+        promo: parseInt(document.getElementById('productPromo').value),
+        quantity: parseInt(document.getElementById('quantity').value)
+    };
 
-            try {
-                const response = await fetch('http://localhost:5000/addProduct', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(productData)
-                });
-
-                const result = await response.json();
-                
-                if (response.ok) {
-                    alert('Product added successfully!');
-                    document.getElementById('addProductForm').reset();
-                } else {
-                    alert(`Error: ${result.error || 'Failed to add product'}`);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Network error - please try again');
-            }
+    try {
+        const response = await fetch('http://localhost:5000/addProduct', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(productData)
         });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert('Product added successfully!');
+            document.getElementById('addProductForm').reset();
+        } else {
+            alert(`Error: ${result.message || result.error || 'Failed to add product'}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Network error - please try again');
+    }
+});
     </script>
 </body>
 </html>

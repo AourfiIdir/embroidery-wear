@@ -329,6 +329,10 @@ app.get("/category/:name/filter", (req, res) => {
 //user when he click in a product a "product page will apear where he can buy , order , and vue the product
 
 app.get("/product/:id", (req, res) => {
+  // Disable caching
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   const productId = req.params.id; // Use params for GET requests
 
   if (!productId) {
@@ -799,10 +803,18 @@ app.get("/isAdmin", Userauth, (req, res) => {
   });
 });
 
-app.post('/addProductWithUrl', Userauth, Roleauth(ROLE.ADMIN), async (req, res) => {
+app.post('/addProduct', Userauth, Roleauth(ROLE.ADMIN), async (req, res) => {
     try {
-        const { productName, description, price, quantity, promo, categoryName, imageUrl } = req.body;
+        const { productName, description, price, quantity, promo, categoryName, img_path } = req.body;
+        if(!productName || !description || !price || !quantity || !categoryName || !img_path) {
 
+            return res.status(400).json({
+                success: false,
+                error: "All fields are required",
+                required_fields: ["productName", "description", "price", "quantity", "categoryName", "img_path"]
+            });
+
+        }
         // Validate all required fields
         const requiredFields = {
             productName: "Product name is required",
@@ -810,7 +822,7 @@ app.post('/addProductWithUrl', Userauth, Roleauth(ROLE.ADMIN), async (req, res) 
             price: "Price is required",
             quantity: "Quantity is required",
             categoryName: "Category is required",
-            imageUrl: "Image URL is required"
+            img_path: "Image URL is required"
         };
 
         for (const [field, message] of Object.entries(requiredFields)) {
@@ -846,7 +858,7 @@ app.post('/addProductWithUrl', Userauth, Roleauth(ROLE.ADMIN), async (req, res) 
 
         // Validate URL
         try {
-            new URL(imageUrl);
+            new URL(img_path);
         } catch (err) {
             return res.status(400).json({ 
                 success: false,
@@ -884,7 +896,7 @@ app.post('/addProductWithUrl', Userauth, Roleauth(ROLE.ADMIN), async (req, res) 
                     price, 
                     quantity, 
                     promo, 
-                    imageUrl, 
+                    img_path, 
                     category.category_id
                 ],
                 function(err) {
@@ -916,7 +928,7 @@ app.post('/addProductWithUrl', Userauth, Roleauth(ROLE.ADMIN), async (req, res) 
                         product: {
                             name: productName,
                             price: price,
-                            imageUrl: imageUrl
+                            img_path: img_path
                         }
                     });
                 }
